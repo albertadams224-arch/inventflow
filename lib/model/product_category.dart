@@ -1,0 +1,17 @@
+enum ProductCategory {
+  fruitsAndVegetables,
+  meatAndSeafood,
+  dairyAndEggs,
+  bakeryAndBread,
+  beverages,
+  snacksAndConfectionery,
+  cannedAndPackagedGoods,
+  frozenFoods,
+  condimentsAndSauces,
+  grainsRiceAndPasta,
+  cookingOilsAndFats,
+  spicesAndSeasonings,
+  personalCare,
+  householdAndCleaning,
+  babyProducts,
+}
