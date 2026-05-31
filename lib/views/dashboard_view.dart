@@ -70,46 +70,49 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   color: Theme.of(context).colorScheme.secondaryContainer,
                   borderRadius: BorderRadius.circular(30),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Today\'s Revenue',
-                        style: kBodySmallTextStyle.copyWith(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSecondaryContainer,
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Today\'s Revenue',
+                          style: kBodySmallTextStyle.copyWith(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSecondaryContainer,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 5),
-                      Text(
-                        'GH₵ 57.00',
-                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                          fontSize: 35,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSecondaryContainer,
+                        const SizedBox(height: 5),
+                        Text(
+                          'GH₵ 57.00',
+                          style: Theme.of(context).textTheme.titleLarge!
+                              .copyWith(
+                                fontSize: 35,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSecondaryContainer,
+                              ),
                         ),
-                      ),
-                      const SizedBox(height: 20),
+                        const SizedBox(height: 20),
 
-                      Row(
-                        children: [
-                          InfoBadge(
-                            icon: Icons.shopping_cart_outlined,
-                            title: '2 Sales Today',
-                          ),
-                          const SizedBox(width: 10),
-                          InfoBadge(
-                            icon: Icons.trending_up,
-                            title: 'GH₵ 28 Profit',
-                          ),
-                        ],
-                      ),
-                    ],
+                        Row(
+                          children: [
+                            InfoBadge(
+                              icon: Icons.shopping_cart_outlined,
+                              title: '2 Sales Today',
+                            ),
+                            const SizedBox(width: 10),
+                            InfoBadge(
+                              icon: Icons.trending_up,
+                              title: 'GH₵ 28 Profit',
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
