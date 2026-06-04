@@ -5,10 +5,12 @@ class AllButton extends StatelessWidget {
     super.key,
     required this.kBodySmallTextStyle,
     required this.allTap,
+    required this.isSelected,
   });
 
   final TextStyle kBodySmallTextStyle;
   final void Function() allTap;
+  final bool isSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -17,13 +19,17 @@ class AllButton extends StatelessWidget {
       child: TextButton(
         onPressed: allTap,
         style: TextButton.styleFrom(
-          backgroundColor: Theme.of(context).colorScheme.primary,
+          backgroundColor: isSelected
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).colorScheme.secondary,
           padding: const EdgeInsets.all(10),
           shape: StadiumBorder(),
         ),
         child: Text(
           'All',
-          style: kBodySmallTextStyle.copyWith(color: Colors.white),
+          style: kBodySmallTextStyle.copyWith(
+            color: Theme.of(context).colorScheme.onPrimary,
+          ),
         ),
       ),
     );
