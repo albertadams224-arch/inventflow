@@ -23,8 +23,8 @@ class InventoryCategoryItem extends StatelessWidget {
         style: TextButton.styleFrom(
           padding: EdgeInsets.symmetric(horizontal: 14, vertical: 6),
           backgroundColor: isSelected == true
-              ? Theme.of(context).colorScheme.primary
-              : Colors.white,
+              ? Theme.of(context).colorScheme.secondaryContainer
+              : Theme.of(context).colorScheme.onPrimary,
           shape: StadiumBorder(side: BorderSide(color: Colors.blueGrey)),
         ),
         child: Text(

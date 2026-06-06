@@ -20,15 +20,15 @@ class AllButton extends StatelessWidget {
         onPressed: allTap,
         style: TextButton.styleFrom(
           backgroundColor: isSelected
-              ? Theme.of(context).colorScheme.primary
-              : Theme.of(context).colorScheme.secondary,
+              ? Theme.of(context).colorScheme.secondaryContainer
+              : Theme.of(context).colorScheme.onPrimary,
           padding: const EdgeInsets.all(10),
           shape: StadiumBorder(),
         ),
         child: Text(
           'All',
           style: kBodySmallTextStyle.copyWith(
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: Theme.of(context).colorScheme.onSecondaryContainer,
           ),
         ),
       ),
