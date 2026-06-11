@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inventflow/view_model/add.dart';
 import 'package:inventflow/view_model/inventory.dart';
 import 'package:inventflow/widgets/buttons/category_dropdown.dart';
@@ -6,21 +7,20 @@ import 'package:inventflow/widgets/date_picker_field.dart';
 import 'package:inventflow/widgets/input_fields.dart';
 import 'package:inventflow/widgets/containers/picture_box.dart';
 
-class AddScreen extends StatefulWidget {
-  final InventoryViewModel inventoryViewModel;
-  const AddScreen({super.key, required this.inventoryViewModel});
+class AddScreen extends ConsumerStatefulWidget {
+  const AddScreen({super.key});
 
   @override
-  State<AddScreen> createState() => _AddScreenState();
+  ConsumerState<AddScreen> createState() => _AddScreenState();
 }
 
-class _AddScreenState extends State<AddScreen> {
-  late AddViewModel _av;
+class _AddScreenState extends ConsumerState<AddScreen> {
+  final _av = AddViewModel();
 
   @override
-  void initState() {
-    super.initState();
-    _av = AddViewModel(iViewModel: widget.inventoryViewModel);
+  void dispose() {
+    _av.dispose();
+    super.dispose();
   }
 
   Future<void> _pickDate() async {
@@ -87,7 +87,8 @@ class _AddScreenState extends State<AddScreen> {
       ScaffoldMessenger.of(context).showSnackBar(snackbarContent(error));
       return;
     }
-    _av.saveProduct();
+
+    ref.read(inventoryProvider.notifier).addProduct(_av.buildProduct());
     Navigator.pop(context);
   }
 
@@ -126,7 +127,6 @@ class _AddScreenState extends State<AddScreen> {
                 controller: _av.nameController,
               ),
               SizedBox(height: 17),
-
               Row(
                 children: [
                   Text(
@@ -164,7 +164,6 @@ class _AddScreenState extends State<AddScreen> {
                   ),
                 ],
               ),
-
               SizedBox(height: 10),
               CategoryDropdown(
                 onChange: (cat) {

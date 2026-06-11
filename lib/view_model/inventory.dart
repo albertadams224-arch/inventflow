@@ -1,42 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inventflow/model/product.dart';
 import 'package:inventflow/model/product_category.dart';
 
-class InventoryViewModel extends ChangeNotifier {
-  ProductCategory? _selectedCategory;
+final inventoryProvider = NotifierProvider<InventoryViewModel, List<Product>>(
+  InventoryViewModel.new,
+);
 
-  final TextEditingController searchQuary = TextEditingController();
+class InventoryViewModel extends Notifier<List<Product>> {
+  ProductCategory? _selectedCategory;
   ProductCategory? get selectedCategory => _selectedCategory;
 
-  InventoryViewModel() {
-    searchQuary.addListener(notifyListeners);
+  final TextEditingController searchQuery = TextEditingController();
+
+  @override
+  List<Product> build() {
+    searchQuery.addListener(() => ref.notifyListeners());
+    return [];
   }
 
-  // add product to empty list
-  final List<Product> _addProduct = [];
-
-  void addProdut(Product product) {
-    _addProduct.insert(0, product);
-    notifyListeners();
+  void addProduct(Product product) {
+    state = [product, ...state];
   }
 
   void selectAll() {
     _selectedCategory = null;
-    notifyListeners();
+    ref.notifyListeners();
   }
 
   void selectCategory(ProductCategory category) {
     _selectedCategory = category;
-    notifyListeners();
+    ref.notifyListeners();
   }
 
   List<Product> get filteredProducts {
     var result = _selectedCategory == null
-        ? _addProduct
-        : _addProduct.where((p) => p.category == _selectedCategory).toList();
+        ? state
+        : state.where((p) => p.category == _selectedCategory).toList();
 
-    if (searchQuary.text.isNotEmpty) {
-      final query = searchQuary.text.toLowerCase();
+    if (searchQuery.text.isNotEmpty) {
+      final query = searchQuery.text.toLowerCase();
       result = result
           .where((p) => p.productName.toLowerCase().contains(query))
           .toList();
@@ -48,11 +51,5 @@ class InventoryViewModel extends ChangeNotifier {
       });
     }
     return result;
-  }
-
-  @override
-  void dispose() {
-    searchQuary.dispose();
-    super.dispose();
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inventflow/model/product_category.dart';
 import 'package:inventflow/view_model/inventory.dart';
 import 'package:inventflow/views/add_screen.dart';
@@ -7,30 +8,13 @@ import 'package:inventflow/widgets/content/inventory_listview_content.dart';
 import 'package:inventflow/widgets/content/inventory_listview_item.dart';
 import 'package:inventflow/widgets/input_fields.dart';
 
-class InventoryScreen extends StatefulWidget {
+class InventoryScreen extends ConsumerWidget {
   const InventoryScreen({super.key});
 
   @override
-  State<InventoryScreen> createState() => _InventoryScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final vm = ref.watch(inventoryProvider.notifier);
 
-class _InventoryScreenState extends State<InventoryScreen> {
-  late InventoryViewModel _iViewModel;
-
-  @override
-  void initState() {
-    super.initState();
-    _iViewModel = InventoryViewModel();
-  }
-
-  @override
-  void dispose() {
-    _iViewModel.searchQuary.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     var kLargeTextStyle = Theme.of(
       context,
     ).textTheme.titleLarge!.copyWith(fontSize: 32, fontWeight: FontWeight.bold);
@@ -38,81 +22,68 @@ class _InventoryScreenState extends State<InventoryScreen> {
       context,
     ).textTheme.bodySmall!.copyWith(fontSize: 20, fontWeight: FontWeight.bold);
 
-    Widget content;
+    final categoryItems = [
+      AllButton(
+        kBodySmallTextStyle: kBodySmallTextStyle.copyWith(
+          color: Theme.of(context).colorScheme.onSecondaryContainer,
+        ),
+        allTap: vm.selectAll,
+        isSelected: vm.selectedCategory == null,
+      ),
+      ...ProductCategory.values.map(
+        (category) => InventoryCategoryItem(
+          category: category,
+          kBodySmallTextStyle: kBodySmallTextStyle,
+          onTap: () => vm.selectCategory(category),
+          isSelected: vm.selectedCategory == category,
+        ),
+      ),
+    ];
 
-    return AnimatedBuilder(
-      animation: _iViewModel,
-      builder: (context, _) {
-        final List<Widget> _categoryItems = [
-          AllButton(
-            kBodySmallTextStyle: kBodySmallTextStyle.copyWith(
-              color: Theme.of(context).colorScheme.onSecondaryContainer,
-            ),
-            allTap: _iViewModel.selectAll,
-            isSelected: _iViewModel.selectedCategory == null,
-          ),
-          ...ProductCategory.values.map(
-            (category) => InventoryCategoryItem(
-              category: category,
-              kBodySmallTextStyle: kBodySmallTextStyle,
-              onTap: () => _iViewModel.selectCategory(category),
-              isSelected: _iViewModel.selectedCategory == category,
-            ),
-          ),
-        ];
-
-        if (_iViewModel.filteredProducts.isEmpty) {
-          content = Center(child: Text('No product found'));
-        } else {
-          content = ListView.builder(
-            itemCount: _iViewModel.filteredProducts.length,
-            itemBuilder: (context, index) => InventoryContentCard(
-              product: _iViewModel.filteredProducts[index],
-            ),
+    final Widget content = vm.filteredProducts.isEmpty
+        ? Center(child: Text('No product found'))
+        : ListView.builder(
+            itemCount: vm.filteredProducts.length,
+            itemBuilder: (context, index) =>
+                InventoryContentCard(product: vm.filteredProducts[index]),
           );
-        }
 
-        return Scaffold(
-          appBar: AppBar(title: Text('Inventory', style: kLargeTextStyle)),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (ctx) => AddScreen(inventoryViewModel: _iViewModel),
-                ),
-              );
-            },
-            child: Icon(
-              Icons.add,
-              color: Theme.of(context).colorScheme.onSecondaryContainer,
+    return Scaffold(
+      appBar: AppBar(title: Text('Inventory', style: kLargeTextStyle)),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (ctx) => AddScreen()));
+        },
+        child: Icon(
+          Icons.add,
+          color: Theme.of(context).colorScheme.onSecondaryContainer,
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            InputFields(
+              icon: Icons.search,
+              hintText: 'search item',
+              controller: vm.searchQuery,
             ),
-          ),
-          body: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                InputFields(
-                  icon: Icons.search,
-                  hintText: 'search item',
-                  controller: _iViewModel.searchQuary,
-                ),
-
-                SizedBox(height: 20),
-                SizedBox(
-                  height: 40,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: _categoryItems.length,
-                    itemBuilder: (context, index) => _categoryItems[index],
-                  ),
-                ),
-                SizedBox(height: 20),
-                Expanded(child: content),
-              ],
+            SizedBox(height: 20),
+            SizedBox(
+              height: 40,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: categoryItems.length,
+                itemBuilder: (context, index) => categoryItems[index],
+              ),
             ),
-          ),
-        );
-      },
+            SizedBox(height: 20),
+            Expanded(child: content),
+          ],
+        ),
+      ),
     );
   }
 }

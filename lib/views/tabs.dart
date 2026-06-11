@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:inventflow/views/dashboard_screen.dart';
+import 'package:inventflow/views/expiry.dart';
 import 'package:inventflow/views/inventory_screen.dart';
 
 class TabScreen extends StatefulWidget {
@@ -13,7 +14,7 @@ class _TabScreenState extends State<TabScreen> {
   List<Widget> screens = [
     DashboardScreen(),
     InventoryScreen(),
-    Text('JOJO'),
+    ExpiryScreen(),
     Text('noy'),
     Text('JOJO'),
   ];
