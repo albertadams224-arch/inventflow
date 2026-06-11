@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:inventflow/view_model/auth/sign_up.dart';
-import 'package:inventflow/views/auth/login_view.dart';
+import 'package:inventflow/views/auth/login_screen.dart';
 import 'package:inventflow/widgets/input_fields.dart';
 
 class SignUp extends StatefulWidget {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class PageContent extends StatelessWidget {
-  const PageContent({
+class OnbaordingScreen extends StatelessWidget {
+  const OnbaordingScreen({
     super.key,
     required this.title,
     required this.description,

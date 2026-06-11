@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:inventflow/views/auth/login_view.dart';
-import 'package:inventflow/views/onboard_view.dart';
+import 'package:inventflow/views/auth/login_screen.dart';
+import 'package:inventflow/views/onboard_screen.dart';
 
-class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({super.key});
+class OnboardViewModel extends StatefulWidget {
+  const OnboardViewModel({super.key});
 
   @override
-  State<OnboardingScreen> createState() => _OnboardingScreenState();
+  State<OnboardViewModel> createState() => _OnboardViewModelState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
+class _OnboardViewModelState extends State<OnboardViewModel> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
   List<Map<String, dynamic>> pages = [
@@ -65,7 +65,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     _currentPage = value;
                   });
                 },
-                itemBuilder: (context, index) => PageContent(
+                itemBuilder: (context, index) => OnbaordingScreen(
                   title: pages[index]['title'],
                   description: pages[index]['description'],
                   imag: pages[index]['image'],

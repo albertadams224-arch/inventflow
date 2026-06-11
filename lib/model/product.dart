@@ -5,6 +5,7 @@ class Product {
   final int productQuantity;
   final double productPrice;
   final DateTime productExpiryDatet;
+  final DateTime producDate;
   final ProductCategory category;
 
   Product({
@@ -12,6 +13,7 @@ class Product {
     required this.productQuantity,
     required this.productPrice,
     required this.productExpiryDatet,
+    required this.producDate,
     required this.category,
   });
 }

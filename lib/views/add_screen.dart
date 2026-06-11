@@ -1,22 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:inventflow/view_model/add.dart';
+import 'package:inventflow/view_model/inventory.dart';
+import 'package:inventflow/widgets/buttons/category_dropdown.dart';
 import 'package:inventflow/widgets/date_picker_field.dart';
 import 'package:inventflow/widgets/input_fields.dart';
 import 'package:inventflow/widgets/containers/picture_box.dart';
 
 class AddScreen extends StatefulWidget {
-  const AddScreen({super.key});
+  final InventoryViewModel inventoryViewModel;
+  const AddScreen({super.key, required this.inventoryViewModel});
 
   @override
   State<AddScreen> createState() => _AddScreenState();
 }
 
 class _AddScreenState extends State<AddScreen> {
-  final _av = Add();
+  late AddViewModel _av;
+
   @override
-  void dispose() {
-    _av.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    _av = AddViewModel(iViewModel: widget.inventoryViewModel);
   }
 
   Future<void> _pickDate() async {
@@ -84,6 +88,7 @@ class _AddScreenState extends State<AddScreen> {
       return;
     }
     _av.saveProduct();
+    Navigator.pop(context);
   }
 
   @override
@@ -121,20 +126,7 @@ class _AddScreenState extends State<AddScreen> {
                 controller: _av.nameController,
               ),
               SizedBox(height: 17),
-              Text(
-                ' Category',
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 17,
-                ),
-              ),
-              SizedBox(height: 10),
-              InputFields(
-                controller: _av.categoryController,
-                hintText: 'e.g. SKU-00123',
-              ),
 
-              SizedBox(height: 15),
               Row(
                 children: [
                   Text(
@@ -172,6 +164,13 @@ class _AddScreenState extends State<AddScreen> {
                   ),
                 ],
               ),
+
+              SizedBox(height: 10),
+              CategoryDropdown(
+                onChange: (cat) {
+                  _av.selectedCategory = cat;
+                },
+              ),
               SizedBox(height: 10),
               Row(
                 children: [
@@ -207,7 +206,7 @@ class _AddScreenState extends State<AddScreen> {
                   Expanded(
                     child: DatePickerField(
                       selectedDate: _av.expiryDate,
-                      onTap: _pickDate,
+                      onTap: _pickExpiry,
                       hintText: 'Expiry date',
                       icon: Icons.event,
                     ),

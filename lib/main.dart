@@ -19,7 +19,7 @@ void main() {
           brightness: Brightness.dark,
         ),
       ),
-      home: OnboardingScreen(),
+      home: OnboardViewModel(),
     ),
   );
 }

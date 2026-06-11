@@ -1,17 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:inventflow/data/dummy_data.dart';
 import 'package:inventflow/model/product.dart';
 import 'package:inventflow/model/product_category.dart';
 
 class InventoryViewModel extends ChangeNotifier {
   ProductCategory? _selectedCategory;
-  final TextEditingController searchQuary = TextEditingController();
 
+  final TextEditingController searchQuary = TextEditingController();
   ProductCategory? get selectedCategory => _selectedCategory;
 
   InventoryViewModel() {
     searchQuary.addListener(notifyListeners);
   }
+
+  // add product to empty list
+  final List<Product> _addProduct = [];
+
+  void addProdut(Product product) {
+    _addProduct.insert(0, product);
+    notifyListeners();
+  }
+
   void selectAll() {
     _selectedCategory = null;
     notifyListeners();
@@ -24,8 +32,8 @@ class InventoryViewModel extends ChangeNotifier {
 
   List<Product> get filteredProducts {
     var result = _selectedCategory == null
-        ? dummyData
-        : dummyData.where((p) => p.category == _selectedCategory).toList();
+        ? _addProduct
+        : _addProduct.where((p) => p.category == _selectedCategory).toList();
 
     if (searchQuary.text.isNotEmpty) {
       final query = searchQuary.text.toLowerCase();

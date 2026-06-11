@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:inventflow/model/product_category.dart';
 import 'package:inventflow/view_model/inventory.dart';
-import 'package:inventflow/views/add_view.dart';
+import 'package:inventflow/views/add_screen.dart';
 import 'package:inventflow/widgets/buttons/all_button.dart';
 import 'package:inventflow/widgets/content/inventory_listview_content.dart';
 import 'package:inventflow/widgets/content/inventory_listview_item.dart';
@@ -15,17 +15,17 @@ class InventoryScreen extends StatefulWidget {
 }
 
 class _InventoryScreenState extends State<InventoryScreen> {
-  late InventoryViewModel _viewModel;
+  late InventoryViewModel _iViewModel;
 
   @override
   void initState() {
     super.initState();
-    _viewModel = InventoryViewModel();
+    _iViewModel = InventoryViewModel();
   }
 
   @override
   void dispose() {
-    _viewModel.searchQuary.dispose();
+    _iViewModel.searchQuary.dispose();
     super.dispose();
   }
 
@@ -41,33 +41,33 @@ class _InventoryScreenState extends State<InventoryScreen> {
     Widget content;
 
     return AnimatedBuilder(
-      animation: _viewModel,
+      animation: _iViewModel,
       builder: (context, _) {
         final List<Widget> _categoryItems = [
           AllButton(
             kBodySmallTextStyle: kBodySmallTextStyle.copyWith(
               color: Theme.of(context).colorScheme.onSecondaryContainer,
             ),
-            allTap: _viewModel.selectAll,
-            isSelected: _viewModel.selectedCategory == null,
+            allTap: _iViewModel.selectAll,
+            isSelected: _iViewModel.selectedCategory == null,
           ),
           ...ProductCategory.values.map(
             (category) => InventoryCategoryItem(
               category: category,
               kBodySmallTextStyle: kBodySmallTextStyle,
-              onTap: () => _viewModel.selectCategory(category),
-              isSelected: _viewModel.selectedCategory == category,
+              onTap: () => _iViewModel.selectCategory(category),
+              isSelected: _iViewModel.selectedCategory == category,
             ),
           ),
         ];
 
-        if (_viewModel.filteredProducts.isEmpty) {
+        if (_iViewModel.filteredProducts.isEmpty) {
           content = Center(child: Text('No product found'));
         } else {
           content = ListView.builder(
-            itemCount: _viewModel.filteredProducts.length,
+            itemCount: _iViewModel.filteredProducts.length,
             itemBuilder: (context, index) => InventoryContentCard(
-              product: _viewModel.filteredProducts[index],
+              product: _iViewModel.filteredProducts[index],
             ),
           );
         }
@@ -76,9 +76,11 @@ class _InventoryScreenState extends State<InventoryScreen> {
           appBar: AppBar(title: Text('Inventory', style: kLargeTextStyle)),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
-              Navigator.of(
-                context,
-              ).push(MaterialPageRoute(builder: (ctx) => AddScreen()));
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (ctx) => AddScreen(inventoryViewModel: _iViewModel),
+                ),
+              );
             },
             child: Icon(
               Icons.add,
@@ -92,7 +94,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 InputFields(
                   icon: Icons.search,
                   hintText: 'search item',
-                  controller: _viewModel.searchQuary,
+                  controller: _iViewModel.searchQuary,
                 ),
 
                 SizedBox(height: 20),
