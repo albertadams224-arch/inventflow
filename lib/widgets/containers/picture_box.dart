@@ -3,8 +3,9 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
 class PictureBox extends StatefulWidget {
-  const PictureBox({super.key});
+  const PictureBox({super.key, required this.callBack});
 
+  final Function(File) callBack;
   @override
   State<PictureBox> createState() => _PictureBoxState();
 }
@@ -20,6 +21,7 @@ class _PictureBoxState extends State<PictureBox> {
       setState(() {
         _image = File(picked.path);
       });
+      widget.callBack(_image!);
     }
   }
 

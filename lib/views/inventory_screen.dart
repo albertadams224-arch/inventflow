@@ -13,7 +13,8 @@ class InventoryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final vm = ref.watch(inventoryProvider.notifier);
+    ref.watch(inventoryProvider);
+    final vm = ref.read(inventoryProvider.notifier);
 
     var kLargeTextStyle = Theme.of(
       context,
@@ -44,8 +45,12 @@ class InventoryScreen extends ConsumerWidget {
         ? Center(child: Text('No product found'))
         : ListView.builder(
             itemCount: vm.filteredProducts.length,
-            itemBuilder: (context, index) =>
-                InventoryContentCard(product: vm.filteredProducts[index]),
+            itemBuilder: (context, index) => InventoryContentCard(
+              product: vm.filteredProducts[index],
+              onDismissed: () => ref
+                  .read(inventoryProvider.notifier)
+                  .removeProduct(vm.filteredProducts[index]),
+            ),
           );
 
     return Scaffold(

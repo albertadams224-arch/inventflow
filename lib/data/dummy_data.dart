@@ -8,6 +8,7 @@
 //     productPrice: 15.50,
 //     productExpiryDatet: DateTime.now(),
 //     category: ProductCategory.dairyAndEggs,
+//     producDate: DateTime.now(),
 //   ),
 
 //   // 2. Canned Goods
@@ -17,6 +18,7 @@
 //     productPrice: 5.00,
 //     productExpiryDatet: DateTime.now(),
 //     category: ProductCategory.cannedAndPackagedGoods,
+//     producDate: DateTime.now(),
 //   ),
 
 //   // 3. Oils & Fats
@@ -26,6 +28,7 @@
 //     productPrice: 45.00,
 //     productExpiryDatet: DateTime.now(),
 //     category: ProductCategory.cookingOilsAndFats,
+//     producDate: DateTime.now(),
 //   ),
 
 //   // 4. Bakery
@@ -35,6 +38,7 @@
 //     productPrice: 18.00,
 //     productExpiryDatet: DateTime.now(),
 //     category: ProductCategory.bakeryAndBread,
+//     producDate: DateTime.now(),
 //   ),
 
 //   // 5. Beverages
@@ -44,6 +48,7 @@
 //     productPrice: 12.50,
 //     productExpiryDatet: DateTime.now(),
 //     category: ProductCategory.beverages,
+//     producDate: DateTime.now(),
 //   ),
 
 //   // 6. Meat & Seafood
@@ -52,6 +57,7 @@
 //     productQuantity: 30,
 //     productPrice: 65.00,
 //     productExpiryDatet: DateTime.now(),
+//     producDate: DateTime.now(),
 //     category: ProductCategory
 //         .frozenFoods, // Or meatAndSeafood depending on your preference
 //   ),

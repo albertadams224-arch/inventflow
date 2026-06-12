@@ -52,4 +52,26 @@ class InventoryViewModel extends Notifier<List<Product>> {
     }
     return result;
   }
+
+  List<Product> get allProducts => state;
+
+  List<Product> get expiredProducts {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    return state.where((p) => p.productExpiryDatet.isBefore(today)).toList();
+  }
+
+  List<Product> get nearExpiredProducts {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    return state.where((p) {
+      final daysLeft = p.productExpiryDatet.difference(today).inDays;
+      return daysLeft >= 0 && daysLeft <= 7;
+    }).toList();
+  }
+
+  ////remove product
+  void removeProduct(Product product) {
+    state = state.where((p) => p != product).toList();
+  }
 }

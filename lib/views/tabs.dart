@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:inventflow/views/dashboard_screen.dart';
-import 'package:inventflow/views/expiry.dart';
+import 'package:inventflow/views/expiry_screen.dart';
 import 'package:inventflow/views/inventory_screen.dart';
 
 class TabScreen extends StatefulWidget {

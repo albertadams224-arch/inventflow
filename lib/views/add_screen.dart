@@ -112,7 +112,11 @@ class _AddScreenState extends ConsumerState<AddScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              PictureBox(),
+              PictureBox(
+                callBack: (image) {
+                  _av.selectedImage = image;
+                },
+              ),
               SizedBox(height: 15),
               Text(
                 'Product name',
@@ -164,7 +168,7 @@ class _AddScreenState extends ConsumerState<AddScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 20),
               CategoryDropdown(
                 onChange: (cat) {
                   _av.selectedCategory = cat;

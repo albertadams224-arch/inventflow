@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:inventflow/model/product_category.dart';
 
 class Product {
@@ -6,6 +8,7 @@ class Product {
   final double productPrice;
   final DateTime productExpiryDatet;
   final DateTime producDate;
+  final File image;
   final ProductCategory category;
 
   Product({
@@ -15,5 +18,6 @@ class Product {
     required this.productExpiryDatet,
     required this.producDate,
     required this.category,
+    required this.image,
   });
 }

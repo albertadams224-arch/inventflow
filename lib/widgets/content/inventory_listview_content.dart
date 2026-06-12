@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:inventflow/model/product.dart';
 
 class InventoryContentCard extends StatelessWidget {
-  const InventoryContentCard({super.key, required this.product});
+  const InventoryContentCard({
+    super.key,
+    required this.product,
+    required this.onDismissed,
+  });
   final Product product;
-
+  final VoidCallback onDismissed;
   @override
   Widget build(BuildContext context) {
     // var kLargeTextStyle = Theme.of(
@@ -39,21 +43,15 @@ class InventoryContentCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: EdgeInsets.all(20),
                 height: 60,
                 width: 60,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondaryContainer,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey,
-                      blurRadius: 5,
-                      offset: Offset(2, 2),
-                    ),
-                  ],
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(15),
                 ),
-                child: Icon(Icons.add),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: Image.file(product.image, fit: BoxFit.cover),
+                ),
               ),
               SizedBox(width: 10),
               Expanded(
@@ -105,12 +103,12 @@ class InventoryContentCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              InventoryInteractButton(
-                bg: Colors.deepPurple.shade50,
-                icon: Icons.edit_outlined,
-                iconColor: Colors.deepPurple.shade400,
-                onPressed: () {},
-              ),
+              // InventoryInteractButton(
+              //   bg: Colors.deepPurple.shade50,
+              //   icon: Icons.edit_outlined,
+              //   iconColor: Colors.deepPurple.shade400,
+              //   onPressed: () {},
+              // ),
               SizedBox(width: 5),
               InventoryInteractButton(
                 bg: Colors.green.shade50,
@@ -123,7 +121,7 @@ class InventoryContentCard extends StatelessWidget {
                 bg: Colors.red.shade50,
                 icon: Icons.delete_outline,
                 iconColor: Colors.red.shade400,
-                onPressed: () {},
+                onPressed: onDismissed,
               ),
             ],
           ),
