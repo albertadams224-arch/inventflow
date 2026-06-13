@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:inventflow/model/product.dart';
+import 'package:inventflow/widgets/containers/show_modal_bottom.dart';
 
 class InventoryContentCard extends StatelessWidget {
   const InventoryContentCard({
@@ -11,15 +12,19 @@ class InventoryContentCard extends StatelessWidget {
   final VoidCallback onDismissed;
   @override
   Widget build(BuildContext context) {
-    // var kLargeTextStyle = Theme.of(
-    //   context,
-    // ).textTheme.titleLarge!.copyWith(fontSize: 32, fontWeight: FontWeight.bold);
     var kBodyLargeTextStyle = Theme.of(
       context,
     ).textTheme.bodyLarge!.copyWith(fontSize: 20, fontWeight: FontWeight.bold);
     var kBodySmallTextStyle = Theme.of(
       context,
     ).textTheme.bodySmall!.copyWith(fontSize: 10, fontWeight: FontWeight.bold);
+
+    void showBottomSheet() {
+      showModalBottomSheet(
+        context: context,
+        builder: (context) => ShowModalBottomSheets(),
+      );
+    }
 
     return Container(
       padding: EdgeInsets.all(20),
@@ -114,7 +119,9 @@ class InventoryContentCard extends StatelessWidget {
                 bg: Colors.green.shade50,
                 icon: Icons.shopping_cart_outlined,
                 iconColor: Colors.green.shade600,
-                onPressed: () {},
+                onPressed: () {
+                  showBottomSheet();
+                },
               ),
               SizedBox(width: 5),
               InventoryInteractButton(

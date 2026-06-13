@@ -8,19 +8,21 @@ class InputFields extends StatelessWidget {
     this.label,
     required this.controller,
     this.validator,
+    this.keyboardType,
   });
   final String? hintText;
   final IconData? icon;
   final String? label;
   final TextEditingController controller;
   final String? Function(String?)? validator;
-
+  final TextInputType? keyboardType;
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
       validator: validator,
       autovalidateMode: AutovalidateMode.onUserInteraction,
+      keyboardType: keyboardType,
       decoration: InputDecoration(
         hintText: hintText ?? 'Enter text',
 
@@ -28,6 +30,7 @@ class InputFields extends StatelessWidget {
         label: label != null ? Text(label!) : null,
         prefixIcon: icon != null ? Icon(icon) : null,
         prefixIconColor: Colors.grey.shade400,
+
         filled: true,
         fillColor: Theme.of(
           context,
