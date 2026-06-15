@@ -14,6 +14,7 @@ class InventoryScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(inventoryProvider);
+
     final vm = ref.read(inventoryProvider.notifier);
 
     var kLargeTextStyle = Theme.of(

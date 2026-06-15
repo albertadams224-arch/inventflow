@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inventflow/model/product.dart';
+import 'package:inventflow/view_model/sales.dart';
 import 'package:inventflow/widgets/containers/show_modal_bottom.dart';
 
-class InventoryContentCard extends StatelessWidget {
+class InventoryContentCard extends ConsumerWidget {
   const InventoryContentCard({
     super.key,
     required this.product,
@@ -11,7 +13,13 @@ class InventoryContentCard extends StatelessWidget {
   final Product product;
   final VoidCallback onDismissed;
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // check if this product is already in the cart
+    final cart = ref.watch(salesProvider);
+    final cartItem = cart.where((i) => i.product == product).firstOrNull;
+    final qtyInCart = cartItem?.quantity ?? 0;
+    final remainingQty = product.productQuantity - qtyInCart;
+
     var kBodyLargeTextStyle = Theme.of(
       context,
     ).textTheme.bodyLarge!.copyWith(fontSize: 20, fontWeight: FontWeight.bold);
@@ -22,7 +30,7 @@ class InventoryContentCard extends StatelessWidget {
     void showBottomSheet() {
       showModalBottomSheet(
         context: context,
-        builder: (context) => ShowModalBottomSheets(),
+        builder: (context) => ShowModalBottomSheets(product: product),
       );
     }
 
@@ -81,7 +89,7 @@ class InventoryContentCard extends StatelessWidget {
                         DisplayItemContainer(
                           bg: Colors.purple.shade50,
                           textColor: Colors.purple.shade700,
-                          title: 'Qty: ${product.productQuantity}',
+                          title: 'Qty: $remainingQty',
                         ),
                         SizedBox(width: 10),
                         DisplayItemContainer(

@@ -19,6 +19,7 @@ class InventoryViewModel extends Notifier<List<Product>> {
     return [];
   }
 
+  //add product to inventory screen
   void addProduct(Product product) {
     state = [product, ...state];
   }
@@ -33,6 +34,7 @@ class InventoryViewModel extends Notifier<List<Product>> {
     ref.notifyListeners();
   }
 
+  //filter for inventory screen
   List<Product> get filteredProducts {
     var result = _selectedCategory == null
         ? state
@@ -54,7 +56,7 @@ class InventoryViewModel extends Notifier<List<Product>> {
   }
 
   List<Product> get allProducts => state;
-
+  //expiry products
   List<Product> get expiredProducts {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -73,5 +75,15 @@ class InventoryViewModel extends Notifier<List<Product>> {
   ////remove product
   void removeProduct(Product product) {
     state = state.where((p) => p != product).toList();
+  }
+
+  ///sales
+  void deductStock(Product product, int quantity) {
+    state = state.map((p) {
+      if (p == product) {
+        return p.copyWith(productQuantity: p.productQuantity - quantity);
+      }
+      return p;
+    }).toList();
   }
 }
