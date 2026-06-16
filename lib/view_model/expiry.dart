@@ -14,9 +14,7 @@ class ExpiryViewModel extends ChangeNotifier {
       DateTime.now().month,
       DateTime.now().day,
     );
-    return _products
-        .where((p) => p.productExpiryDatet.isBefore(today))
-        .toList();
+    return _products.where((p) => p.productExpiryDate.isBefore(today)).toList();
   }
 
   List<Product> get nearExpiredProducts {
@@ -26,19 +24,18 @@ class ExpiryViewModel extends ChangeNotifier {
       DateTime.now().day,
     );
     return _products.where((p) {
-      final daysLeft = p.productExpiryDatet.difference(today).inDays;
+      final daysLeft = p.productExpiryDate.difference(today).inDays;
       return daysLeft >= 0 && daysLeft <= 7;
     }).toList();
   }
 
-  // status logic moves here, not in the widget
   String getStatus(Product product) {
     final today = DateTime(
       DateTime.now().year,
       DateTime.now().month,
       DateTime.now().day,
     );
-    final daysLeft = product.productExpiryDatet.difference(today).inDays;
+    final daysLeft = product.productExpiryDate.difference(today).inDays;
 
     if (daysLeft < 0) return 'Expired';
     if (daysLeft <= 7) return 'Near Expired';

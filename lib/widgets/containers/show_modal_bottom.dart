@@ -24,6 +24,7 @@ class ShowModalBottomSheets extends ConsumerWidget {
         ).showSnackBar(SnackBar(content: Text(error)));
         return;
       }
+      vm.confirmSale(ref);
       Navigator.of(context).pop();
     }
 

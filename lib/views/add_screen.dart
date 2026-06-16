@@ -81,14 +81,14 @@ class _AddScreenState extends ConsumerState<AddScreen> {
     );
   }
 
-  void _addProduct() {
+  void _addProduct() async {
     final error = _av.validateInput();
     if (error != null) {
       ScaffoldMessenger.of(context).showSnackBar(snackbarContent(error));
       return;
     }
-
-    ref.read(inventoryProvider.notifier).addProduct(_av.buildProduct());
+    final product = await _av.buildProduct();
+    ref.read(inventoryProvider.notifier).addProduct(product);
     Navigator.pop(context);
   }
 

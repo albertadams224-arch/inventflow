@@ -20,8 +20,9 @@ class LoginViewModel {
     if (password.length < 8) return 'At least 8 characters';
     if (!password.contains(RegExp(r'[A-Z]'))) return 'Add an uppercase letter';
     if (!password.contains(RegExp(r'[0-9]'))) return 'Add a number';
-    if (!password.contains(RegExp(r'[!@#\$%^&*]')))
+    if (!password.contains(RegExp(r'[!@#\$%^&*]'))) {
       return 'Add a special character';
+    }
     return null;
   }
 

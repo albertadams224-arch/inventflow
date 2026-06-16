@@ -1,27 +1,50 @@
-import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inventflow/model/product.dart';
 import 'package:inventflow/model/product_category.dart';
+import 'package:flutter/material.dart';
 
 final inventoryProvider = NotifierProvider<InventoryViewModel, List<Product>>(
   InventoryViewModel.new,
 );
 
 class InventoryViewModel extends Notifier<List<Product>> {
+  final _db = FirebaseFirestore.instance;
   ProductCategory? _selectedCategory;
   ProductCategory? get selectedCategory => _selectedCategory;
-
   final TextEditingController searchQuery = TextEditingController();
 
   @override
   List<Product> build() {
     searchQuery.addListener(() => ref.notifyListeners());
+    _listenToProducts(); // start listening to Firestore
     return [];
   }
 
-  //add product to inventory screen
-  void addProduct(Product product) {
-    state = [product, ...state];
+  // listens to Firestore in real time
+  void _listenToProducts() {
+    _db.collection('products').snapshots().listen((snapshot) {
+      state = snapshot.docs
+          .map((doc) => Product.fromMap(doc.id, doc.data()))
+          .toList();
+    });
+  }
+
+  // adds product to Firestore
+  Future<void> addProduct(Product product) async {
+    await _db.collection('products').add(product.toMap());
+  }
+
+  // removes product from Firestore
+  Future<void> removeProduct(Product product) async {
+    await _db.collection('products').doc(product.id).delete();
+  }
+
+  // deducts stock in Firestore
+  Future<void> deductStock(Product product, int quantity) async {
+    await _db.collection('products').doc(product.id).update({
+      'productQuantity': product.productQuantity - quantity,
+    });
   }
 
   void selectAll() {
@@ -34,7 +57,6 @@ class InventoryViewModel extends Notifier<List<Product>> {
     ref.notifyListeners();
   }
 
-  //filter for inventory screen
   List<Product> get filteredProducts {
     var result = _selectedCategory == null
         ? state
@@ -45,7 +67,6 @@ class InventoryViewModel extends Notifier<List<Product>> {
       result = result
           .where((p) => p.productName.toLowerCase().contains(query))
           .toList();
-
       result.sort((a, b) {
         final aIndex = a.productName.toLowerCase().indexOf(query);
         final bIndex = b.productName.toLowerCase().indexOf(query);
@@ -56,34 +77,19 @@ class InventoryViewModel extends Notifier<List<Product>> {
   }
 
   List<Product> get allProducts => state;
-  //expiry products
+
   List<Product> get expiredProducts {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    return state.where((p) => p.productExpiryDatet.isBefore(today)).toList();
+    return state.where((p) => p.productExpiryDate.isBefore(today)).toList();
   }
 
   List<Product> get nearExpiredProducts {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     return state.where((p) {
-      final daysLeft = p.productExpiryDatet.difference(today).inDays;
+      final daysLeft = p.productExpiryDate.difference(today).inDays;
       return daysLeft >= 0 && daysLeft <= 7;
-    }).toList();
-  }
-
-  ////remove product
-  void removeProduct(Product product) {
-    state = state.where((p) => p != product).toList();
-  }
-
-  ///sales
-  void deductStock(Product product, int quantity) {
-    state = state.map((p) {
-      if (p == product) {
-        return p.copyWith(productQuantity: p.productQuantity - quantity);
-      }
-      return p;
     }).toList();
   }
 }

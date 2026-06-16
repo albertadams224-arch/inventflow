@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "149476734547",
+    "firebase_url": "https://inventflow-4d6e8-default-rtdb.firebaseio.com",
+    "project_id": "inventflow-4d6e8",
+    "storage_bucket": "inventflow-4d6e8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:149476734547:android:e6d1e9a2de4c67885c78a6",
+        "android_client_info": {
+          "package_name": "com.example.inventflow"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMaAWuYxYdFAoY-JBxnkm7O2HFUed4sVg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

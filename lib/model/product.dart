@@ -1,43 +1,50 @@
-import 'dart:io';
-
 import 'package:inventflow/model/product_category.dart';
 
 class Product {
+  final String id;
   final String productName;
   final int productQuantity;
   final double productPrice;
-  final DateTime productExpiryDatet;
-  final DateTime producDate;
-  final File image;
+  final DateTime productExpiryDate;
+  final DateTime productDate;
+  final String imageUrl;
   final ProductCategory category;
 
   Product({
+    required this.id,
     required this.productName,
     required this.productQuantity,
     required this.productPrice,
-    required this.productExpiryDatet,
-    required this.producDate,
+    required this.productExpiryDate,
+    required this.productDate,
     required this.category,
-    required this.image,
+    required this.imageUrl,
   });
 
-  Product copyWith({
-    String? productName,
-    int? productQuantity,
-    double? productPrice,
-    DateTime? productExpiryDatet,
-    DateTime? producDate,
-    File? image,
-    ProductCategory? category,
-  }) {
+  // converting to map for firebase
+  Map<String, dynamic> toMap() {
+    return {
+      'productName': productName,
+      'productQuantity': productQuantity,
+      'productPrice': productPrice,
+      'productExpiryDatet': productExpiryDate.toIso8601String(),
+      'producDate': productDate.toIso8601String(),
+      'category': category.name,
+      'imageUrl': imageUrl,
+    };
+  }
+
+  //returns data from firebase
+  factory Product.fromMap(String id, Map<String, dynamic> map) {
     return Product(
-      productName: productName ?? this.productName,
-      productQuantity: productQuantity ?? this.productQuantity,
-      productPrice: productPrice ?? this.productPrice,
-      productExpiryDatet: productExpiryDatet ?? this.productExpiryDatet,
-      producDate: producDate ?? this.producDate,
-      image: image ?? this.image,
-      category: category ?? this.category,
+      id: id,
+      productName: map['productName'],
+      productQuantity: map['productQuantity'],
+      productPrice: map['productPrice'],
+      productExpiryDate: DateTime.parse(map['productExpiryDatet']),
+      productDate: DateTime.parse(map['producDate']),
+      category: ProductCategory.values.byName(map['category']),
+      imageUrl: map['imageUrl'],
     );
   }
 }

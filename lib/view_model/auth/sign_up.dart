@@ -10,8 +10,9 @@ class SignUpViewModel {
     if (name.isEmpty) return 'Name required';
     if (name.length < 2) return 'Name too short';
     if (name.contains(RegExp(r'[0-9]'))) return 'Name cannot contain numbers';
-    if (name.contains(RegExp(r'[!@#\$%^&*]')))
+    if (name.contains(RegExp(r'[!@#\$%^&*]'))) {
       return 'Name cannot contain special characters';
+    }
     return null;
   }
 
@@ -31,8 +32,9 @@ class SignUpViewModel {
     if (password.length < 8) return 'At least 8 characters';
     if (!password.contains(RegExp(r'[A-Z]'))) return 'Add an uppercase letter';
     if (!password.contains(RegExp(r'[0-9]'))) return 'Add a number';
-    if (!password.contains(RegExp(r'[!@#\$%^&*]')))
+    if (!password.contains(RegExp(r'[!@#\$%^&*]'))) {
       return 'Add a special character';
+    }
     return null;
   }
 

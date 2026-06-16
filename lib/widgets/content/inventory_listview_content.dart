@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inventflow/model/product.dart';
 import 'package:inventflow/view_model/sales.dart';
 import 'package:inventflow/widgets/containers/show_modal_bottom.dart';
+import 'dart:convert';
 
 class InventoryContentCard extends ConsumerWidget {
   const InventoryContentCard({
@@ -61,9 +62,12 @@ class InventoryContentCard extends ConsumerWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: Image.file(product.image, fit: BoxFit.cover),
+                child: Image.memory(
+                  base64Decode(product.imageUrl),
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Icon(Icons.image_not_supported_outlined);
+                  },
                 ),
               ),
               SizedBox(width: 10),

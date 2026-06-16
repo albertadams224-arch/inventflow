@@ -87,7 +87,7 @@ class _ExpiryScreenState extends ConsumerState<ExpiryScreen> {
               ],
             ),
             SizedBox(height: 20),
-            Expanded(child: content!),
+            Expanded(child: content),
           ],
         ),
       ),

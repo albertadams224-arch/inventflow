@@ -60,6 +60,7 @@ class _OnboardViewModelState extends State<OnboardViewModel> {
             Expanded(
               child: PageView.builder(
                 controller: _pageController,
+                itemCount: pages.length,
                 onPageChanged: (value) {
                   setState(() {
                     _currentPage = value;

@@ -41,7 +41,7 @@ class ExpriyListviewContent extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(product.productName, style: kMediumTextStyle),
-                  Text('Expires: ${vm.formatDate(product.productExpiryDatet)}'),
+                  Text('Expires: ${vm.formatDate(product.productExpiryDate)}'),
                 ],
               ),
               const Spacer(),

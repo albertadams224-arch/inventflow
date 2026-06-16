@@ -26,6 +26,5 @@ class FilterButton extends StatelessWidget {
 
       child: Text(label),
     );
-    ;
   }
 }
