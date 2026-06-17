@@ -9,12 +9,12 @@ class ExpiryViewModel extends ChangeNotifier {
   List<Product> get allProducts => _products;
 
   List<Product> get expiredProducts {
-    final today = DateTime(
-      DateTime.now().year,
-      DateTime.now().month,
-      DateTime.now().day,
-    );
-    return _products.where((p) => p.productExpiryDate.isBefore(today)).toList();
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    return _products.where((p) {
+      final daysLeft = p.productExpiryDate.difference(today).inDays;
+      return daysLeft < 0; // ← strictly expired
+    }).toList();
   }
 
   List<Product> get nearExpiredProducts {

@@ -14,6 +14,7 @@ class ExpiryScreen extends ConsumerStatefulWidget {
 
 class _ExpiryScreenState extends ConsumerState<ExpiryScreen> {
   int _selectedIndex = 0;
+  late ExpiryViewModel _vm;
 
   @override
   Widget build(BuildContext context) {
@@ -22,14 +23,15 @@ class _ExpiryScreenState extends ConsumerState<ExpiryScreen> {
     ).textTheme.titleLarge!.copyWith(fontSize: 32, fontWeight: FontWeight.bold);
 
     final products = ref.watch(inventoryProvider);
-    final vm = ExpiryViewModel(products);
+    _vm = ExpiryViewModel(products);
 
     final displayedProducts = switch (_selectedIndex) {
-      0 => vm.allProducts,
-      1 => vm.expiredProducts,
-      2 => vm.nearExpiredProducts,
-      _ => vm.allProducts,
+      0 => _vm.allProducts,
+      1 => _vm.expiredProducts,
+      2 => _vm.nearExpiredProducts,
+      _ => _vm.allProducts,
     };
+    print('Selected: $_selectedIndex, Count: ${displayedProducts.length}');
 
     Widget? content;
 
@@ -40,7 +42,7 @@ class _ExpiryScreenState extends ConsumerState<ExpiryScreen> {
         itemCount: displayedProducts.length,
         itemBuilder: (context, index) => ExpriyListviewContent(
           product: displayedProducts[index],
-          vm: vm,
+          vm: _vm,
           onDismissed: () => ref
               .read(inventoryProvider.notifier)
               .removeProduct(displayedProducts[index]),

@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inventflow/model/product.dart';
 import 'package:inventflow/model/sale.dart';
+import 'package:inventflow/model/cart_iterm.dart';
 import 'package:inventflow/view_model/inventory.dart';
 
 final salesProvider = NotifierProvider<SalesViewModel, List<SaleItem>>(
@@ -8,6 +10,7 @@ final salesProvider = NotifierProvider<SalesViewModel, List<SaleItem>>(
 );
 
 class SalesViewModel extends Notifier<List<SaleItem>> {
+  final _db = FirebaseFirestore.instance;
   @override
   List<SaleItem> build() {
     return [];
@@ -40,13 +43,28 @@ class SalesViewModel extends Notifier<List<SaleItem>> {
   // getting total amount on sales
   double get total => state.fold(0, (sum, item) => sum + item.subtotal);
 
-  void confirmSale(WidgetRef ref) {
-    // deduct stock from inventory
-    for (final item in state) {
-      ref
-          .read(inventoryProvider.notifier)
-          .deductStock(item.product, item.quantity);
-    }
+  Future<void> confirmSale(WidgetRef ref) async {
+    if (state.isEmpty) return;
+
+    final item = state.first;
+
+    /// save to firebase
+    final sale = Sale(
+      soldAt: DateTime.now(),
+      productId: item.product.id,
+      productName: item.product.productName,
+      pricePerUnit: item.product.productPrice,
+      quantity: item.quantity,
+      subtotal: item.subtotal,
+    );
+    await _db.collection('sales').add(sale.toMap());
+
+    // deducting from product
+    await ref
+        .read(inventoryProvider.notifier)
+        .deductStock(item.product, item.quantity);
+
+    // clear cart
     state = [];
   }
 

@@ -59,6 +59,7 @@ class InventoryContentCard extends ConsumerWidget {
               Container(
                 height: 60,
                 width: 60,
+                clipBehavior: Clip.hardEdge,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
                 ),
@@ -91,14 +92,18 @@ class InventoryContentCard extends ConsumerWidget {
                     Row(
                       children: [
                         DisplayItemContainer(
-                          bg: Colors.purple.shade50,
-                          textColor: Colors.purple.shade700,
+                          bg: Theme.of(context).colorScheme.tertiaryContainer,
+                          textColor: Theme.of(
+                            context,
+                          ).colorScheme.onTertiaryContainer,
                           title: 'Qty: $remainingQty',
                         ),
                         SizedBox(width: 10),
                         DisplayItemContainer(
-                          bg: Color(0xFFB2DFDB),
-                          textColor: Color(0xFF004D40),
+                          bg: Theme.of(context).colorScheme.primaryContainer,
+                          textColor: Theme.of(
+                            context,
+                          ).colorScheme.onPrimaryContainer,
                           title: 'GH₵ ${product.productPrice}',
                         ),
                       ],
@@ -107,13 +112,13 @@ class InventoryContentCard extends ConsumerWidget {
                 ),
               ),
 
-              DisplayItemContainer(
-                bg: Color(0xFFB2DFDB),
-                textColor: Color(0xFF004D40),
-                title: 'Fresh',
-                icon: Icons.check,
-                fontWeight: FontWeight.w900,
-              ),
+              // DisplayItemContainer(
+              //   bg: Color(0xFFB2DFDB),
+              //   textColor: Color(0xFF004D40),
+              //   title: 'Fresh',
+              //   icon: Icons.check,
+              //   fontWeight: FontWeight.w900,
+              // ),
             ],
           ),
           Spacer(),
@@ -128,7 +133,7 @@ class InventoryContentCard extends ConsumerWidget {
               // ),
               SizedBox(width: 5),
               InventoryInteractButton(
-                bg: Colors.green.shade50,
+                bg: Theme.of(context).colorScheme.primaryContainer,
                 icon: Icons.shopping_cart_outlined,
                 iconColor: Colors.green.shade600,
                 onPressed: () {
@@ -139,7 +144,7 @@ class InventoryContentCard extends ConsumerWidget {
               InventoryInteractButton(
                 bg: Colors.red.shade50,
                 icon: Icons.delete_outline,
-                iconColor: Colors.red.shade400,
+                iconColor: Theme.of(context).colorScheme.error,
                 onPressed: onDismissed,
               ),
             ],

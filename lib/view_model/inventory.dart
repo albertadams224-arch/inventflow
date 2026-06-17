@@ -81,7 +81,10 @@ class InventoryViewModel extends Notifier<List<Product>> {
   List<Product> get expiredProducts {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    return state.where((p) => p.productExpiryDate.isBefore(today)).toList();
+    return state.where((p) {
+      final daysLeft = p.productExpiryDate.difference(today).inDays;
+      return daysLeft < 0;
+    }).toList();
   }
 
   List<Product> get nearExpiredProducts {

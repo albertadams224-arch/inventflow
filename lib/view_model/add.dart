@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
-import 'package:firebase_storage/firebase_storage.dart';
+
 import 'package:flutter/material.dart';
 import 'package:inventflow/model/product.dart';
 import 'package:inventflow/model/product_category.dart';

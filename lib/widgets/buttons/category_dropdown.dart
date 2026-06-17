@@ -11,7 +11,7 @@ class CategoryDropdown extends StatefulWidget {
 }
 
 class _CategoryDropdownState extends State<CategoryDropdown> {
-  ProductCategory _selectedCategory = ProductCategory.beverages;
+  ProductCategory selectedCategory = ProductCategory.beverages;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class _CategoryDropdownState extends State<CategoryDropdown> {
       onChanged: (value) {
         if (value == null) return;
         setState(() {
-          _selectedCategory = value;
+          selectedCategory = value;
         });
 
         widget.onChange(value);
