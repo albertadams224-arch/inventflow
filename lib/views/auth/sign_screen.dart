@@ -36,7 +36,7 @@ class _SignUpState extends State<SignUp> {
     ).textTheme.bodyLarge!.copyWith(fontSize: 20, fontWeight: FontWeight.bold);
 
     return Scaffold(
-      appBar: AppBar(backgroundColor: Theme.of(context).colorScheme.primary),
+      appBar: AppBar(backgroundColor: Theme.of(context).colorScheme.surface),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Form(

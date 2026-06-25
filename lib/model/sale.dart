@@ -1,5 +1,6 @@
 class Sale {
   final DateTime soldAt;
+  final String transactionId;
   final String productId;
   final String productName;
   final double pricePerUnit;
@@ -8,6 +9,7 @@ class Sale {
 
   Sale({
     required this.soldAt,
+    required this.transactionId,
     required this.productId,
     required this.productName,
     required this.pricePerUnit,
@@ -18,6 +20,7 @@ class Sale {
   Map<String, dynamic> toMap() {
     return {
       'soldAt': soldAt.toIso8601String(),
+      'transactionId': transactionId,
       'productId': productId,
       'productName': productName,
       'pricePerUnit': pricePerUnit,
@@ -29,6 +32,7 @@ class Sale {
   factory Sale.fromMap(String id, Map<String, dynamic> map) {
     return Sale(
       soldAt: DateTime.parse(map['soldAt']),
+      transactionId: map['transactionId'] ?? id,
       productId: map['productId'],
       productName: map['productName'],
       pricePerUnit: (map['pricePerUnit'] as num).toDouble(),

@@ -21,6 +21,8 @@ class InventoryContentCard extends ConsumerWidget {
     final qtyInCart = cartItem?.quantity ?? 0;
     final remainingQty = product.productQuantity - qtyInCart;
 
+    final colorScheme = Theme.of(context).colorScheme;
+
     var kBodyLargeTextStyle = Theme.of(
       context,
     ).textTheme.bodyLarge!.copyWith(fontSize: 20, fontWeight: FontWeight.bold);
@@ -41,12 +43,12 @@ class InventoryContentCard extends ConsumerWidget {
       height: 170,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.secondaryContainer,
+        color: colorScheme.secondaryContainer,
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).colorScheme.secondary,
-            blurRadius: 5,
-            offset: Offset(2, 2),
+            color: colorScheme.secondary.withValues(alpha: 0.25),
+            blurRadius: 12,
+            offset: Offset(0, 4),
           ),
         ],
         borderRadius: BorderRadius.circular(20),
@@ -61,49 +63,53 @@ class InventoryContentCard extends ConsumerWidget {
                 width: 60,
                 clipBehavior: Clip.hardEdge,
                 decoration: BoxDecoration(
+                  color: colorScheme.surface,
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Image.memory(
                   base64Decode(product.imageUrl),
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
-                    return Icon(Icons.image_not_supported_outlined);
+                    return Icon(
+                      Icons.image_not_supported_outlined,
+                      color: colorScheme.onSurfaceVariant,
+                    );
                   },
                 ),
               ),
-              SizedBox(width: 10),
+              SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       product.productName,
-                      style: kBodyLargeTextStyle.copyWith(
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: kBodyLargeTextStyle,
                     ),
                     Text(
                       product.category.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: kBodySmallTextStyle.copyWith(
-                        overflow: TextOverflow.ellipsis,
+                        color: colorScheme.onSecondaryContainer.withValues(
+                          alpha: 0.7,
+                        ),
                       ),
                     ),
                     SizedBox(height: 8),
                     Row(
                       children: [
                         DisplayItemContainer(
-                          bg: Theme.of(context).colorScheme.tertiaryContainer,
-                          textColor: Theme.of(
-                            context,
-                          ).colorScheme.onTertiaryContainer,
+                          bg: colorScheme.tertiaryContainer,
+                          textColor: colorScheme.onTertiaryContainer,
                           title: 'Qty: $remainingQty',
                         ),
                         SizedBox(width: 10),
                         DisplayItemContainer(
-                          bg: Theme.of(context).colorScheme.primaryContainer,
-                          textColor: Theme.of(
-                            context,
-                          ).colorScheme.onPrimaryContainer,
+                          bg: colorScheme.primaryContainer,
+                          textColor: colorScheme.onPrimaryContainer,
                           title: 'GH₵ ${product.productPrice}',
                         ),
                       ],
@@ -133,7 +139,7 @@ class InventoryContentCard extends ConsumerWidget {
               // ),
               SizedBox(width: 5),
               InventoryInteractButton(
-                bg: Theme.of(context).colorScheme.primaryContainer,
+                bg: colorScheme.primaryContainer,
                 icon: Icons.shopping_cart_outlined,
                 iconColor: Colors.green.shade600,
                 onPressed: () {
@@ -144,7 +150,7 @@ class InventoryContentCard extends ConsumerWidget {
               InventoryInteractButton(
                 bg: Colors.red.shade50,
                 icon: Icons.delete_outline,
-                iconColor: Theme.of(context).colorScheme.error,
+                iconColor: colorScheme.error,
                 onPressed: onDismissed,
               ),
             ],
@@ -203,15 +209,18 @@ class DisplayItemContainer extends StatelessWidget {
     ).textTheme.bodySmall!.copyWith(fontSize: 10, fontWeight: FontWeight.bold);
 
     return Container(
-      padding: EdgeInsets.all(4),
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          if (icon != null) Icon(icon, size: 15),
-
+          if (icon != null) ...[
+            Icon(icon, size: 15, color: textColor),
+            SizedBox(width: 4),
+          ],
           Text(
             title,
             style:

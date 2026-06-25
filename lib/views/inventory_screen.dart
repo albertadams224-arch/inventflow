@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inventflow/model/product_category.dart';
 import 'package:inventflow/view_model/inventory.dart';
 import 'package:inventflow/views/add_screen.dart';
+import 'package:inventflow/views/check_out_screen.dart';
 import 'package:inventflow/widgets/buttons/all_button.dart';
+import 'package:inventflow/widgets/content/cart_bar.dart';
 import 'package:inventflow/widgets/content/inventory_listview_content.dart';
 import 'package:inventflow/widgets/content/inventory_listview_item.dart';
 import 'package:inventflow/widgets/input_fields.dart';
@@ -66,6 +68,13 @@ class InventoryScreen extends ConsumerWidget {
           Icons.add,
           color: Theme.of(context).colorScheme.onSecondaryContainer,
         ),
+      ),
+      bottomNavigationBar: CartBar(
+        onTap: () {
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (ctx) => CheckoutScreen()));
+        },
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),

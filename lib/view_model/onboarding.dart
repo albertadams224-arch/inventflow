@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:inventflow/views/auth/login_screen.dart';
-import 'package:inventflow/views/onboard_screen.dart';
+import 'package:inventflow/views/startup/onboard_screen.dart';
 
 class OnboardViewModel extends StatefulWidget {
   const OnboardViewModel({super.key});

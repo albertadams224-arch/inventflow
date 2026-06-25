@@ -46,4 +46,8 @@ class SalesAnalyticsViewModel extends Notifier<List<Sale>> {
   // total revenue today
   double get todayRevenue =>
       todaySales.fold(0, (sum, sale) => sum + sale.subtotal);
+
+  // total items sold today
+  int get todayItemsSold =>
+      todaySales.fold(0, (sum, sale) => sum + sale.quantity);
 }

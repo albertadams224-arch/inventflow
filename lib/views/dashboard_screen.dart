@@ -12,6 +12,9 @@ class DashboardScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(inventoryProvider);
+    ref.watch(salesAnalyticsProvider);
+
     final inventory = ref.watch(inventoryProvider.notifier);
     final analytics = ref.watch(salesAnalyticsProvider.notifier);
 
@@ -162,7 +165,7 @@ class DashboardScreen extends ConsumerWidget {
                       icon: Icons.shopping_bag_outlined,
                       iconColor: Colors.teal,
                       iconBackgroundColor: Colors.teal.withValues(alpha: 0.1),
-                      value: '${analytics.totalItemsSold}',
+                      value: '${analytics.todayItemsSold}',
                       label: 'Items Sold',
                     ),
                   ),
