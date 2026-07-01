@@ -16,7 +16,7 @@ class ShowModalBottomSheets extends ConsumerWidget {
       context,
     ).textTheme.titleLarge!.copyWith(fontSize: 32, fontWeight: FontWeight.bold);
 
-    void handleSellNow() {
+    void handleSellNow() async {
       final error = vm.validateQuantity(product, quantityController.text);
       if (error != null) {
         ScaffoldMessenger.of(
@@ -25,8 +25,10 @@ class ShowModalBottomSheets extends ConsumerWidget {
         return;
       }
       final qty = int.parse(quantityController.text);
-      vm.sellNow(ref, product, qty);
-      Navigator.of(context).pop();
+      await vm.sellNow(ref, product, qty);
+      if (context.mounted) {
+        Navigator.of(context).pop();
+      }
     }
 
     void handleAddToCart() {

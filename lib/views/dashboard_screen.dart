@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:inventflow/model/sales_analytics.dart';
+import 'package:inventflow/view_model/sales_analytics.dart';
 import 'package:inventflow/view_model/inventory.dart';
 import 'package:inventflow/views/expiry_screen.dart';
 import 'package:inventflow/widgets/containers/alert_banner.dart';

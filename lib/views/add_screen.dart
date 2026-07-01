@@ -101,10 +101,10 @@ class _AddScreenState extends ConsumerState<AddScreen> {
           style: Theme.of(context).textTheme.titleLarge!.copyWith(
             fontSize: 32,
             fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       ),
       body: SingleChildScrollView(
         child: Padding(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:inventflow/views/dashboard_screen.dart';
 import 'package:inventflow/views/expiry_screen.dart';
 import 'package:inventflow/views/inventory_screen.dart';
+import 'package:inventflow/views/sales_screen.dart';
 
 class TabScreen extends StatefulWidget {
   const TabScreen({super.key});
@@ -15,7 +16,7 @@ class _TabScreenState extends State<TabScreen> {
     DashboardScreen(),
     InventoryScreen(),
     ExpiryScreen(),
-    Text('noy'),
+    SalesScreen(),
     Text('JOJO'),
   ];
   int selectedIndex = 0;

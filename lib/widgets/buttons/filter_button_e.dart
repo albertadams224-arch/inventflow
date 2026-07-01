@@ -24,7 +24,10 @@ class FilterButton extends StatelessWidget {
       ),
       onPressed: onPressed,
 
-      child: Text(label),
+      child: Text(
+        label,
+        // style: TextStyle(color: Theme.of(context).colorScheme.primary),
+      ),
     );
   }
 }
