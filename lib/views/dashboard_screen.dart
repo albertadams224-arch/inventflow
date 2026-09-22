@@ -17,162 +17,153 @@ class DashboardScreen extends ConsumerWidget {
 
     final inventory = ref.watch(inventoryProvider.notifier);
     final analytics = ref.watch(salesAnalyticsProvider.notifier);
+    final colorScheme = Theme.of(context).colorScheme;
 
     var kLargeTextStyle = Theme.of(
       context,
-    ).textTheme.titleLarge!.copyWith(fontSize: 32, fontWeight: FontWeight.bold);
-    var kBodySmallTextStyle = Theme.of(
+    ).textTheme.titleLarge!.copyWith(fontSize: 30, fontWeight: FontWeight.bold);
+    var kSectionTextStyle = Theme.of(
       context,
-    ).textTheme.bodySmall!.copyWith(fontSize: 20, fontWeight: FontWeight.bold);
+    ).textTheme.bodySmall!.copyWith(fontSize: 18, fontWeight: FontWeight.bold);
+
+    void goToExpiry() {
+      Navigator.of(
+        context,
+      ).push(MaterialPageRoute(builder: (ctx) => ExpiryScreen()));
+    }
 
     return Scaffold(
-      appBar: AppBar(title: Text('Hello Albert!')),
-      body: Padding(
+      appBar: AppBar(title: const Text('Hello Albert!')),
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Dashboard', style: kLargeTextStyle),
-              SizedBox(height: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Dashboard', style: kLargeTextStyle),
+            const SizedBox(height: 20),
 
-              if (inventory.expiredProducts.isNotEmpty)
-                AlertBanner(
-                  key: ValueKey('expired'),
-                  message:
-                      '${inventory.expiredProducts.length} item(s) EXPIRED! Remove them.',
-                  icon: Icons.info_outline,
-                  themeColor: Colors.red.shade700,
-                  onDismissed: () {
-                    Navigator.of(
-                      context,
-                    ).push(MaterialPageRoute(builder: (ctx) => ExpiryScreen()));
-                  },
-                ),
+            if (inventory.expiredProducts.isNotEmpty)
+              AlertBanner(
+                key: const ValueKey('expired'),
+                message:
+                    '${inventory.expiredProducts.length} item(s) EXPIRED! Remove them.',
+                icon: Icons.info_outline,
+                themeColor: colorScheme.error,
+                onDismissed: goToExpiry,
+              ),
 
-              if (inventory.nearExpiredProducts.isNotEmpty)
-                AlertBanner(
-                  key: ValueKey('near_expiry'),
-                  message:
-                      '${inventory.nearExpiredProducts.length} items expiring within 7 days.',
-                  icon: Icons.access_time,
-                  themeColor: Colors.orange.shade800,
-                  onDismissed: () {
-                    Navigator.of(
-                      context,
-                    ).push(MaterialPageRoute(builder: (ctx) => ExpiryScreen()));
-                  },
-                ),
+            if (inventory.nearExpiredProducts.isNotEmpty)
+              AlertBanner(
+                key: const ValueKey('near_expiry'),
+                message:
+                    '${inventory.nearExpiredProducts.length} items expiring within 7 days.',
+                icon: Icons.access_time,
+                themeColor: colorScheme.tertiary,
+                onDismissed: goToExpiry,
+              ),
 
-              // revenue card
-              Container(
-                width: double.infinity,
-                height: 170,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondaryContainer,
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Today\'s Revenue',
-                        style: kBodySmallTextStyle.copyWith(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSecondaryContainer,
+            // revenue card
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: colorScheme.primary,
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Today's Revenue",
+                      style: kSectionTextStyle.copyWith(
+                        color: colorScheme.onPrimary.withValues(alpha: 0.85),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'GH₵ ${analytics.todayRevenue.toStringAsFixed(2)}',
+                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                        fontSize: 34,
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 8,
+                      children: [
+                        InfoBadge(
+                          icon: Icons.shopping_cart_outlined,
+                          title: '${analytics.todaySales.length} Sales Today',
                         ),
-                      ),
-                      const SizedBox(height: 5),
-                      Text(
-                        'GH₵ ${analytics.todayRevenue.toStringAsFixed(2)}',
-                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                          fontSize: 35,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSecondaryContainer,
+                        InfoBadge(
+                          icon: Icons.trending_up,
+                          title:
+                              'GH₵ ${analytics.totalRevenue.toStringAsFixed(2)} Total',
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      Row(
-                        children: [
-                          InfoBadge(
-                            icon: Icons.shopping_cart_outlined,
-                            title: '${analytics.todaySales.length} Sales Today',
-                          ),
-                          const SizedBox(width: 10),
-                          InfoBadge(
-                            icon: Icons.trending_up,
-                            title:
-                                'GH₵ ${analytics.totalRevenue.toStringAsFixed(2)} Total',
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
+            ),
 
-              SizedBox(height: 20),
-              Text('Overview', style: kBodySmallTextStyle),
-              SizedBox(height: 10),
+            const SizedBox(height: 28),
+            Text('Overview', style: kSectionTextStyle),
+            const SizedBox(height: 12),
 
-              Row(
-                children: [
-                  Expanded(
-                    child: OverviewCard(
-                      icon: Icons.inventory_2_outlined,
-                      iconColor: Colors.deepPurple,
-                      iconBackgroundColor: Colors.deepPurple.withValues(
-                        alpha: 0.1,
-                      ),
-                      value: '${inventory.allProducts.length}',
-                      label: 'Total Items',
-                    ),
+            Row(
+              children: [
+                Expanded(
+                  child: OverviewCard(
+                    icon: Icons.inventory_2_outlined,
+                    accentColor: colorScheme.primary,
+                    accentBackgroundColor: colorScheme.primaryContainer,
+                    value: '${inventory.allProducts.length}',
+                    label: 'Total Items',
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: OverviewCard(
-                      icon: Icons.access_time,
-                      iconColor: Colors.orange,
-                      iconBackgroundColor: Colors.orange.withValues(alpha: 0.1),
-                      value: '${inventory.nearExpiredProducts.length}',
-                      label: 'Near Expiry',
-                    ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: OverviewCard(
+                    icon: Icons.access_time,
+                    accentColor: colorScheme.tertiary,
+                    accentBackgroundColor: colorScheme.tertiaryContainer,
+                    value: '${inventory.nearExpiredProducts.length}',
+                    label: 'Near Expiry',
                   ),
-                ],
-              ),
+                ),
+              ],
+            ),
 
-              const SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-              Row(
-                children: [
-                  Expanded(
-                    child: OverviewCard(
-                      icon: Icons.cancel_outlined,
-                      iconColor: Colors.red,
-                      iconBackgroundColor: Colors.red.withValues(alpha: 0.1),
-                      value: '${inventory.expiredProducts.length}',
-                      label: 'Expired',
-                    ),
+            Row(
+              children: [
+                Expanded(
+                  child: OverviewCard(
+                    icon: Icons.cancel_outlined,
+                    accentColor: colorScheme.error,
+                    accentBackgroundColor: colorScheme.errorContainer,
+                    value: '${inventory.expiredProducts.length}',
+                    label: 'Expired',
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: OverviewCard(
-                      icon: Icons.shopping_bag_outlined,
-                      iconColor: Colors.teal,
-                      iconBackgroundColor: Colors.teal.withValues(alpha: 0.1),
-                      value: '${analytics.todayItemsSold}',
-                      label: 'Items Sold',
-                    ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: OverviewCard(
+                    icon: Icons.shopping_bag_outlined,
+                    accentColor: colorScheme.secondary,
+                    accentBackgroundColor: colorScheme.secondaryContainer,
+                    value: '${analytics.todayItemsSold}',
+                    label: 'Items Sold',
                   ),
-                ],
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

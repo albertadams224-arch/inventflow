@@ -13,9 +13,9 @@ class InventoryContentCard extends ConsumerWidget {
   });
   final Product product;
   final VoidCallback onDismissed;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // check if this product is already in the cart
     final cart = ref.watch(salesProvider);
     final cartItem = cart.where((i) => i.product == product).firstOrNull;
     final qtyInCart = cartItem?.quantity ?? 0;
@@ -25,7 +25,7 @@ class InventoryContentCard extends ConsumerWidget {
 
     var kBodyLargeTextStyle = Theme.of(
       context,
-    ).textTheme.bodyLarge!.copyWith(fontSize: 20, fontWeight: FontWeight.bold);
+    ).textTheme.bodyLarge!.copyWith(fontSize: 18, fontWeight: FontWeight.bold);
     var kBodySmallTextStyle = Theme.of(
       context,
     ).textTheme.bodySmall!.copyWith(fontSize: 10, fontWeight: FontWeight.bold);
@@ -38,33 +38,26 @@ class InventoryContentCard extends ConsumerWidget {
     }
 
     return Container(
-      padding: EdgeInsets.all(20),
-      margin: EdgeInsets.all(5),
-      height: 170,
-      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
       decoration: BoxDecoration(
-        color: colorScheme.secondaryContainer,
-        boxShadow: [
-          BoxShadow(
-            color: colorScheme.secondary.withValues(alpha: 0.25),
-            blurRadius: 12,
-            offset: Offset(0, 4),
-          ),
-        ],
-        borderRadius: BorderRadius.circular(20),
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: colorScheme.outlineVariant, width: 0.5),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                height: 60,
-                width: 60,
+                height: 56,
+                width: 56,
                 clipBehavior: Clip.hardEdge,
                 decoration: BoxDecoration(
-                  color: colorScheme.surface,
-                  borderRadius: BorderRadius.circular(15),
+                  color: colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(14),
                 ),
                 child: Image.memory(
                   base64Decode(product.imageUrl),
@@ -77,7 +70,7 @@ class InventoryContentCard extends ConsumerWidget {
                   },
                 ),
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -88,69 +81,48 @@ class InventoryContentCard extends ConsumerWidget {
                       overflow: TextOverflow.ellipsis,
                       style: kBodyLargeTextStyle,
                     ),
+                    const SizedBox(height: 2),
                     Text(
                       product.category.name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: kBodySmallTextStyle.copyWith(
-                        color: colorScheme.onSecondaryContainer.withValues(
-                          alpha: 0.7,
-                        ),
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w500,
+                        color: colorScheme.onSurfaceVariant,
                       ),
-                    ),
-                    SizedBox(height: 8),
-                    Row(
-                      children: [
-                        DisplayItemContainer(
-                          bg: colorScheme.tertiaryContainer,
-                          textColor: colorScheme.onTertiaryContainer,
-                          title: 'Qty: $remainingQty',
-                        ),
-                        SizedBox(width: 10),
-                        DisplayItemContainer(
-                          bg: colorScheme.primaryContainer,
-                          textColor: colorScheme.onPrimaryContainer,
-                          title: 'GH₵ ${product.productPrice}',
-                        ),
-                      ],
                     ),
                   ],
                 ),
               ),
-
-              // DisplayItemContainer(
-              //   bg: Color(0xFFB2DFDB),
-              //   textColor: Color(0xFF004D40),
-              //   title: 'Fresh',
-              //   icon: Icons.check,
-              //   fontWeight: FontWeight.w900,
-              // ),
             ],
           ),
-          Spacer(),
+          const SizedBox(height: 14),
           Row(
-            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              // InventoryInteractButton(
-              //   bg: Colors.deepPurple.shade50,
-              //   icon: Icons.edit_outlined,
-              //   iconColor: Colors.deepPurple.shade400,
-              //   onPressed: () {},
-              // ),
-              SizedBox(width: 5),
+              DisplayItemContainer(
+                bg: colorScheme.tertiaryContainer,
+                textColor: colorScheme.onTertiaryContainer,
+                title: 'Qty: $remainingQty',
+              ),
+              const SizedBox(width: 8),
+              DisplayItemContainer(
+                bg: colorScheme.primaryContainer,
+                textColor: colorScheme.onPrimaryContainer,
+                title: 'GH₵ ${product.productPrice}',
+              ),
+              const Spacer(),
               InventoryInteractButton(
                 bg: colorScheme.primaryContainer,
                 icon: Icons.shopping_cart_outlined,
-                iconColor: Colors.green.shade600,
-                onPressed: () {
-                  showBottomSheet();
-                },
+                iconColor: colorScheme.onPrimaryContainer,
+                onPressed: showBottomSheet,
               ),
-              SizedBox(width: 5),
+              const SizedBox(width: 8),
               InventoryInteractButton(
-                bg: Colors.red.shade50,
+                bg: colorScheme.errorContainer,
                 icon: Icons.delete_outline,
-                iconColor: colorScheme.error,
+                iconColor: colorScheme.onErrorContainer,
                 onPressed: onDismissed,
               ),
             ],
@@ -172,16 +144,21 @@ class InventoryInteractButton extends StatelessWidget {
   final IconData icon;
   final Color bg;
   final Color iconColor;
-  final Function() onPressed;
+  final VoidCallback onPressed;
+
   @override
   Widget build(BuildContext context) {
-    return TextButton.icon(
-      style: IconButton.styleFrom(
-        backgroundColor: bg,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(23)),
+    return InkWell(
+      onTap: onPressed,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(9),
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(icon, size: 19, color: iconColor),
       ),
-      onPressed: onPressed,
-      label: Icon(icon, color: iconColor),
     );
   }
 }
@@ -202,6 +179,7 @@ class DisplayItemContainer extends StatelessWidget {
   final IconData? icon;
   final FontWeight? fontWeight;
   final TextStyle? textStyle;
+
   @override
   Widget build(BuildContext context) {
     var kBodySmallTextStyle = Theme.of(
@@ -209,17 +187,17 @@ class DisplayItemContainer extends StatelessWidget {
     ).textTheme.bodySmall!.copyWith(fontSize: 10, fontWeight: FontWeight.bold);
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(9),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (icon != null) ...[
-            Icon(icon, size: 15, color: textColor),
-            SizedBox(width: 4),
+            Icon(icon, size: 14, color: textColor),
+            const SizedBox(width: 4),
           ],
           Text(
             title,
@@ -228,7 +206,7 @@ class DisplayItemContainer extends StatelessWidget {
                 kBodySmallTextStyle.copyWith(
                   color: textColor,
                   fontWeight: fontWeight ?? FontWeight.bold,
-                  fontSize: 13,
+                  fontSize: 12,
                 ),
           ),
         ],

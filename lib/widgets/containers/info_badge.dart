@@ -8,24 +8,23 @@ class InfoBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.2),
+        color: colorScheme.onPrimary.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            color: Theme.of(context).colorScheme.onSecondaryContainer,
-            size: 16,
-          ),
+          Icon(icon, color: colorScheme.onPrimary, size: 16),
           const SizedBox(width: 6),
           Text(
             title,
             style: TextStyle(
-              color: Theme.of(context).colorScheme.onSecondaryContainer,
+              color: colorScheme.onPrimary,
               fontWeight: FontWeight.bold,
               fontSize: 12,
             ),

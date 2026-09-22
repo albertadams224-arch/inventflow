@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inventflow/model/product.dart';
 import 'package:inventflow/model/product_category.dart';
 import 'package:flutter/material.dart';
+import 'package:inventflow/model/sale_iterm.dart';
 
 final inventoryProvider = NotifierProvider<InventoryViewModel, List<Product>>(
   InventoryViewModel.new,
@@ -74,6 +75,16 @@ class InventoryViewModel extends Notifier<List<Product>> {
       });
     }
     return result;
+  }
+
+  // add inside InventoryViewModel:
+  List<Product> products(List<SaleItem> cart) {
+    return filteredProducts.where((product) {
+      final qtyInCart =
+          cart.where((i) => i.product == product).firstOrNull?.quantity ?? 0;
+      final remainingQty = product.productQuantity - qtyInCart;
+      return remainingQty > 0;
+    }).toList();
   }
 
   List<Product> get allProducts => state;

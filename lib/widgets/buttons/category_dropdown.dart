@@ -15,22 +15,37 @@ class _CategoryDropdownState extends State<CategoryDropdown> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return DropdownButtonFormField(
-      hint: Text('Selected Category'),
+      hint: const Text('Select category'),
       isExpanded: true,
-      decoration: const InputDecoration(
-        labelText: 'Category',
-        border: OutlineInputBorder(),
+      decoration: InputDecoration(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: colorScheme.outlineVariant),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: colorScheme.outlineVariant),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: colorScheme.primary, width: 1.5),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 14,
+        ),
       ),
       items: ProductCategory.values.map((cat) {
-        return DropdownMenuItem(value: cat, child: Text(cat.name));
+        return DropdownMenuItem(value: cat, child: Text(cat.label));
       }).toList(),
       onChanged: (value) {
         if (value == null) return;
         setState(() {
           selectedCategory = value;
         });
-
         widget.onChange(value);
       },
     );

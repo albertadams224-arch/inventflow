@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inventflow/model/product.dart';
 import 'package:inventflow/model/sale.dart';
-import 'package:inventflow/model/cart_iterm.dart';
+import 'package:inventflow/model/sale_iterm.dart';
 import 'package:inventflow/view_model/inventory.dart';
 
 final salesProvider = NotifierProvider<SalesViewModel, List<SaleItem>>(

@@ -9,26 +9,32 @@ class AllButton extends StatelessWidget {
   });
 
   final TextStyle kBodySmallTextStyle;
-  final void Function() allTap;
+  final VoidCallback allTap;
   final bool isSelected;
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: TextButton(
         onPressed: allTap,
         style: TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           backgroundColor: isSelected
-              ? Theme.of(context).colorScheme.secondaryContainer
-              : Theme.of(context).colorScheme.onPrimary,
-          padding: const EdgeInsets.all(10),
-          shape: StadiumBorder(),
+              ? colorScheme.primary
+              : colorScheme.surfaceContainerHighest,
+          shape: const StadiumBorder(),
         ),
         child: Text(
           'All',
           style: kBodySmallTextStyle.copyWith(
-            color: Theme.of(context).colorScheme.onSecondaryContainer,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: isSelected
+                ? colorScheme.onPrimary
+                : colorScheme.onSurfaceVariant,
           ),
         ),
       ),

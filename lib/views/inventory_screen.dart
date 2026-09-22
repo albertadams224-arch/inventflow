@@ -9,6 +9,7 @@ import 'package:inventflow/widgets/content/cart_bar.dart';
 import 'package:inventflow/widgets/content/inventory_listview_content.dart';
 import 'package:inventflow/widgets/content/inventory_listview_item.dart';
 import 'package:inventflow/widgets/input_fields.dart';
+import 'package:inventflow/view_model/sales.dart';
 
 class InventoryScreen extends ConsumerWidget {
   const InventoryScreen({super.key});
@@ -16,12 +17,14 @@ class InventoryScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(inventoryProvider);
-
+    final cart = ref.watch(salesProvider);
     final vm = ref.read(inventoryProvider.notifier);
+    final colorScheme = Theme.of(context).colorScheme;
 
+    final products = vm.products(cart);
     var kLargeTextStyle = Theme.of(
       context,
-    ).textTheme.titleLarge!.copyWith(fontSize: 32, fontWeight: FontWeight.bold);
+    ).textTheme.titleLarge!.copyWith(fontSize: 30, fontWeight: FontWeight.bold);
     var kBodySmallTextStyle = Theme.of(
       context,
     ).textTheme.bodySmall!.copyWith(fontSize: 20, fontWeight: FontWeight.bold);
@@ -29,7 +32,7 @@ class InventoryScreen extends ConsumerWidget {
     final categoryItems = [
       AllButton(
         kBodySmallTextStyle: kBodySmallTextStyle.copyWith(
-          color: Theme.of(context).colorScheme.onSecondaryContainer,
+          color: colorScheme.onSecondaryContainer,
         ),
         allTap: vm.selectAll,
         isSelected: vm.selectedCategory == null,
@@ -44,15 +47,35 @@ class InventoryScreen extends ConsumerWidget {
       ),
     ];
 
-    final Widget content = vm.filteredProducts.isEmpty
-        ? Center(child: Text('No product found'))
+    final Widget content = products.isEmpty
+        ? Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.inventory_2_outlined,
+                  size: 44,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'No products found',
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          )
         : ListView.builder(
-            itemCount: vm.filteredProducts.length,
+            padding: const EdgeInsets.only(bottom: 8),
+            itemCount: products.length,
             itemBuilder: (context, index) => InventoryContentCard(
-              product: vm.filteredProducts[index],
+              product: products[index],
               onDismissed: () => ref
                   .read(inventoryProvider.notifier)
-                  .removeProduct(vm.filteredProducts[index]),
+                  .removeProduct(products[index]),
             ),
           );
 
@@ -64,10 +87,7 @@ class InventoryScreen extends ConsumerWidget {
             context,
           ).push(MaterialPageRoute(builder: (ctx) => AddScreen()));
         },
-        child: Icon(
-          Icons.add,
-          color: Theme.of(context).colorScheme.onSecondaryContainer,
-        ),
+        child: Icon(Icons.add, color: colorScheme.onSecondaryContainer),
       ),
       bottomNavigationBar: CartBar(
         onTap: () {
@@ -77,7 +97,7 @@ class InventoryScreen extends ConsumerWidget {
         },
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.fromLTRB(20, 4, 20, 0),
         child: Column(
           children: [
             InputFields(
@@ -85,16 +105,17 @@ class InventoryScreen extends ConsumerWidget {
               hintText: 'search item',
               controller: vm.searchQuery,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 18),
             SizedBox(
               height: 40,
-              child: ListView.builder(
+              child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: categoryItems.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 0),
                 itemBuilder: (context, index) => categoryItems[index],
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 18),
             Expanded(child: content),
           ],
         ),

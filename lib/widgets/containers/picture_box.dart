@@ -27,41 +27,42 @@ class _PictureBoxState extends State<PictureBox> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return GestureDetector(
       onTap: _takePicture,
       child: Container(
         height: 150,
         width: double.infinity,
         decoration: BoxDecoration(
-          color: Theme.of(
-            context,
-          ).colorScheme.primaryContainer.withValues(alpha: 0.2),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: Colors.black,
-            width: 1.5,
-            style: BorderStyle.solid,
-          ),
+          color: colorScheme.primaryContainer.withValues(alpha: 0.2),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: colorScheme.outlineVariant, width: 1.2),
         ),
         child: _image != null
             ? ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Image.file(_image!, fit: BoxFit.cover),
+                borderRadius: BorderRadius.circular(18),
+                child: Image.file(
+                  _image!,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                ),
               )
             : Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
                     Icons.camera_alt_outlined,
-                    color: Theme.of(context).colorScheme.primary,
-                    size: 40,
+                    color: colorScheme.primary,
+                    size: 36,
                   ),
+                  const SizedBox(height: 6),
                   Text(
                     'Take a picture',
                     style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                      fontSize: 22,
-
-                      color: Theme.of(context).colorScheme.primary,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: colorScheme.primary,
                     ),
                   ),
                 ],

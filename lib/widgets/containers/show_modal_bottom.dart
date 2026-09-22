@@ -4,43 +4,80 @@ import 'package:inventflow/model/product.dart';
 import 'package:inventflow/view_model/sales.dart';
 import 'package:inventflow/widgets/input_fields.dart';
 
-class ShowModalBottomSheets extends ConsumerWidget {
+class ShowModalBottomSheets extends ConsumerStatefulWidget {
   const ShowModalBottomSheets({super.key, required this.product});
   final Product product;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ShowModalBottomSheets> createState() =>
+      _ShowModalBottomSheetsState();
+}
+
+class _ShowModalBottomSheetsState extends ConsumerState<ShowModalBottomSheets> {
+  final quantityController = TextEditingController();
+  bool isLoading = false;
+
+  Future<void> sellNow() async {
     final vm = ref.read(salesProvider.notifier);
-    final quantityController = TextEditingController();
+    final error = vm.validateQuantity(widget.product, quantityController.text);
+    if (error != null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error)));
+      return;
+    }
+    final qty = int.parse(quantityController.text);
+
+    setState(() => isLoading = true);
+    try {
+      await vm.sellNow(ref, widget.product, qty);
+    } finally {
+      if (mounted) setState(() => isLoading = false);
+    }
+
+    if (context.mounted) {
+      final messenger = ScaffoldMessenger.of(context);
+      Navigator.of(context).pop();
+      messenger.showSnackBar(
+        SnackBar(
+          content: Row(
+            children: const [
+              Icon(Icons.check_circle, color: Colors.white),
+              SizedBox(width: 10),
+              Text('Sale completed! 🎉'),
+            ],
+          ),
+          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+  void addToCart() {
+    final vm = ref.read(salesProvider.notifier);
+    final error = vm.validateAndAdd(widget.product, quantityController.text);
+    if (error != null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error)));
+      return;
+    }
+    Navigator.of(context).pop();
+  }
+
+  @override
+  void dispose() {
+    quantityController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     var kLargeTextStyle = Theme.of(
       context,
     ).textTheme.titleLarge!.copyWith(fontSize: 32, fontWeight: FontWeight.bold);
-
-    void handleSellNow() async {
-      final error = vm.validateQuantity(product, quantityController.text);
-      if (error != null) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(error)));
-        return;
-      }
-      final qty = int.parse(quantityController.text);
-      await vm.sellNow(ref, product, qty);
-      if (context.mounted) {
-        Navigator.of(context).pop();
-      }
-    }
-
-    void handleAddToCart() {
-      final error = vm.validateAndAdd(product, quantityController.text);
-      if (error != null) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(error)));
-        return;
-      }
-      Navigator.of(context).pop();
-    }
 
     return Container(
       padding: const EdgeInsets.all(20.0),
@@ -51,7 +88,7 @@ class ShowModalBottomSheets extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(product.productName, style: kLargeTextStyle),
+          Text(widget.product.productName, style: kLargeTextStyle),
           const SizedBox(height: 8),
           Row(
             children: [
@@ -61,10 +98,10 @@ class ShowModalBottomSheets extends ConsumerWidget {
                 color: Theme.of(context).colorScheme.onSecondaryContainer,
               ),
               const SizedBox(width: 5),
-              Text('${product.productQuantity} available'),
+              Text('${widget.product.productQuantity} available'),
               const Spacer(),
               Chip(
-                label: Text('GHC ${product.productPrice}'),
+                label: Text('GHC ${widget.product.productPrice}'),
                 backgroundColor: Theme.of(context).colorScheme.primaryContainer,
               ),
             ],
@@ -87,9 +124,18 @@ class ShowModalBottomSheets extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            onPressed: handleSellNow,
-            icon: const Icon(Icons.shopping_bag_outlined),
-            label: const Text('Sell Now'),
+            onPressed: isLoading ? null : sellNow,
+            icon: isLoading
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : const Icon(Icons.shopping_bag_outlined),
+            label: Text(isLoading ? 'Processing...' : 'Sell Now'),
           ),
 
           const SizedBox(height: 12),
@@ -102,7 +148,7 @@ class ShowModalBottomSheets extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            onPressed: handleAddToCart,
+            onPressed: isLoading ? null : addToCart,
             icon: const Icon(Icons.add_shopping_cart),
             label: const Text('Add to cart'),
           ),

@@ -2,35 +2,30 @@ import 'package:flutter/material.dart';
 
 class OverviewCard extends StatelessWidget {
   final IconData icon;
-  final Color iconBackgroundColor;
-  final Color iconColor;
+  final Color accentBackgroundColor;
+  final Color accentColor;
   final String value;
   final String label;
 
   const OverviewCard({
     super.key,
     required this.icon,
-    required this.iconBackgroundColor,
-    required this.iconColor,
+    required this.accentBackgroundColor,
+    required this.accentColor,
     required this.value,
     required this.label,
   });
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.secondaryContainer,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        border: Border.all(color: colorScheme.outlineVariant, width: 0.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -38,28 +33,24 @@ class OverviewCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: iconBackgroundColor,
+              color: accentBackgroundColor,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon, color: iconColor, size: 24),
+            child: Icon(icon, color: accentColor, size: 22),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: colorScheme.onSurface,
             ),
           ),
-          const SizedBox(height: 4),
-
+          const SizedBox(height: 2),
           Text(
             label,
-            style: TextStyle(
-              fontSize: 14,
-              color: Theme.of(context).colorScheme.onSecondaryContainer,
-            ),
+            style: TextStyle(fontSize: 13, color: colorScheme.onSurfaceVariant),
           ),
         ],
       ),

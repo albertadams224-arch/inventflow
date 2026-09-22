@@ -18,9 +18,10 @@ class _ExpiryScreenState extends ConsumerState<ExpiryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     var kLargeTextStyle = Theme.of(
       context,
-    ).textTheme.titleLarge!.copyWith(fontSize: 32, fontWeight: FontWeight.bold);
+    ).textTheme.titleLarge!.copyWith(fontSize: 30, fontWeight: FontWeight.bold);
 
     final products = ref.watch(inventoryProvider);
     _vm = ExpiryViewModel(products);
@@ -31,14 +32,32 @@ class _ExpiryScreenState extends ConsumerState<ExpiryScreen> {
       2 => _vm.nearExpiredProducts,
       _ => _vm.allProducts,
     };
-    print('Selected: $_selectedIndex, Count: ${displayedProducts.length}');
 
-    Widget? content;
-
+    Widget content;
     if (displayedProducts.isEmpty) {
-      content = Center(child: Text('No iterm'));
+      content = Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.check_circle_outline,
+              size: 44,
+              color: colorScheme.onSurfaceVariant,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'No items here',
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                color: colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      );
     } else {
       content = ListView.builder(
+        padding: const EdgeInsets.only(bottom: 8),
         itemCount: displayedProducts.length,
         itemBuilder: (context, index) => ExpriyListviewContent(
           product: displayedProducts[index],
@@ -49,6 +68,7 @@ class _ExpiryScreenState extends ConsumerState<ExpiryScreen> {
         ),
       );
     }
+
     return Scaffold(
       appBar: AppBar(title: Text('Expiry', style: kLargeTextStyle)),
       body: Padding(
@@ -57,38 +77,35 @@ class _ExpiryScreenState extends ConsumerState<ExpiryScreen> {
           children: [
             Row(
               children: [
-                FilterButton(
-                  label: 'All',
-                  isSelected: _selectedIndex == 0,
-                  onPressed: () {
-                    setState(() {
-                      _selectedIndex = 0;
-                    });
-                  },
+                Expanded(
+                  child: FilterButton(
+                    label: 'All',
+                    count: _vm.allProducts.length,
+                    isSelected: _selectedIndex == 0,
+                    onPressed: () => setState(() => _selectedIndex = 0),
+                  ),
                 ),
-                const SizedBox(width: 12),
-                FilterButton(
-                  label: 'Expired',
-                  isSelected: _selectedIndex == 1,
-                  onPressed: () {
-                    setState(() {
-                      _selectedIndex = 1;
-                    });
-                  },
+                const SizedBox(width: 10),
+                Expanded(
+                  child: FilterButton(
+                    label: 'Expired',
+                    count: _vm.expiredProducts.length,
+                    isSelected: _selectedIndex == 1,
+                    onPressed: () => setState(() => _selectedIndex = 1),
+                  ),
                 ),
-                const SizedBox(width: 12),
-                FilterButton(
-                  label: 'Near Expired',
-                  isSelected: _selectedIndex == 2,
-                  onPressed: () {
-                    setState(() {
-                      _selectedIndex = 2;
-                    });
-                  },
+                const SizedBox(width: 10),
+                Expanded(
+                  child: FilterButton(
+                    label: 'Near',
+                    count: _vm.nearExpiredProducts.length,
+                    isSelected: _selectedIndex == 2,
+                    onPressed: () => setState(() => _selectedIndex = 2),
+                  ),
                 ),
               ],
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Expanded(child: content),
           ],
         ),

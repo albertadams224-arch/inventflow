@@ -12,26 +12,33 @@ class InventoryCategoryItem extends StatelessWidget {
 
   final ProductCategory category;
   final TextStyle kBodySmallTextStyle;
-  final void Function() onTap;
+  final VoidCallback onTap;
   final bool? isSelected;
+
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final selected = isSelected == true;
+
     return Padding(
       padding: const EdgeInsets.only(left: 8),
       child: TextButton(
         onPressed: onTap,
         style: TextButton.styleFrom(
-          padding: EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-          backgroundColor: isSelected == true
-              ? Theme.of(context).colorScheme.secondaryContainer
-              : Theme.of(context).colorScheme.onPrimary,
-          shape: StadiumBorder(side: BorderSide(color: Colors.blueGrey)),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          backgroundColor: selected
+              ? colorScheme.primary
+              : colorScheme.surfaceContainerHighest,
+          shape: const StadiumBorder(),
         ),
         child: Text(
           category.name,
           style: kBodySmallTextStyle.copyWith(
-            fontSize: 16,
-            color: Theme.of(context).colorScheme.onSecondaryContainer,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: selected
+                ? colorScheme.onPrimary
+                : colorScheme.onSurfaceVariant,
           ),
         ),
       ),

@@ -16,6 +16,7 @@ class AddScreen extends ConsumerStatefulWidget {
 
 class _AddScreenState extends ConsumerState<AddScreen> {
   final _av = AddViewModel();
+  bool isLoading = false;
 
   @override
   void dispose() {
@@ -48,23 +49,24 @@ class _AddScreenState extends ConsumerState<AddScreen> {
   }
 
   SnackBar snackbarContent(String error) {
+    final colorScheme = Theme.of(context).colorScheme;
     return SnackBar(
       behavior: SnackBarBehavior.floating,
-      margin: EdgeInsets.all(16),
-      backgroundColor: Color(0xFFFCEBEB),
+      margin: const EdgeInsets.all(16),
+      backgroundColor: colorScheme.errorContainer,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Color(0xFFF09595), width: 0.5),
+        side: BorderSide(color: colorScheme.error, width: 0.5),
       ),
       content: Row(
         children: [
-          Icon(Icons.cancel_outlined, color: Color(0xFFA32D2D)),
-          SizedBox(width: 12),
+          Icon(Icons.cancel_outlined, color: colorScheme.error),
+          const SizedBox(width: 12),
           Expanded(
             child: Text(
               error,
               style: TextStyle(
-                color: Color(0xFF501313),
+                color: colorScheme.onErrorContainer,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -73,7 +75,7 @@ class _AddScreenState extends ConsumerState<AddScreen> {
       ),
       action: SnackBarAction(
         label: 'Dismiss',
-        textColor: Color(0xFFA32D2D),
+        textColor: colorScheme.error,
         onPressed: () {
           ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
         },
@@ -87,28 +89,50 @@ class _AddScreenState extends ConsumerState<AddScreen> {
       ScaffoldMessenger.of(context).showSnackBar(snackbarContent(error));
       return;
     }
-    final product = await _av.buildProduct();
-    ref.read(inventoryProvider.notifier).addProduct(product);
-    Navigator.pop(context);
+
+    setState(() => isLoading = true);
+    try {
+      final product = await _av.buildProduct();
+      await ref.read(inventoryProvider.notifier).addProduct(product);
+    } finally {
+      if (mounted) setState(() => isLoading = false);
+    }
+
+    if (context.mounted) {
+      Navigator.pop(context);
+    }
+  }
+
+  Widget _sectionLabel(String text) {
+    return Text(
+      text,
+      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+        fontWeight: FontWeight.bold,
+        fontSize: 16,
+        color: Theme.of(context).colorScheme.onSurface,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
           'Add Item',
           style: Theme.of(context).textTheme.titleLarge!.copyWith(
-            fontSize: 32,
+            fontSize: 30,
             fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.onSurface,
+            color: colorScheme.onSurface,
           ),
         ),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -117,95 +141,59 @@ class _AddScreenState extends ConsumerState<AddScreen> {
                   _av.selectedImage = image;
                 },
               ),
-              SizedBox(height: 15),
-              Text(
-                'Product name',
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 17,
-                ),
-              ),
-              SizedBox(height: 15),
+              const SizedBox(height: 28),
+
+              _sectionLabel('Product name'),
+              const SizedBox(height: 10),
               InputFields(
                 hintText: 'e.g. Wireless headphones',
                 controller: _av.nameController,
               ),
-              SizedBox(height: 17),
-              Row(
-                children: [
-                  Text(
-                    'Prices(GHS)',
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 17,
-                    ),
-                  ),
-                  Spacer(),
-                  Text(
-                    'Stock qty',
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 17,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 10),
+              const SizedBox(height: 24),
+
+              _sectionLabel('Pricing & stock'),
+              const SizedBox(height: 10),
               Row(
                 children: [
                   Expanded(
                     child: InputFields(
                       controller: _av.pricesController,
-                      hintText: '0.00',
+                      hintText: 'Price (GHS)',
                     ),
                   ),
-                  SizedBox(width: 20),
+                  const SizedBox(width: 14),
                   Expanded(
                     child: InputFields(
                       controller: _av.quantityController,
-                      hintText: '0',
+                      hintText: 'Stock qty',
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 24),
+
+              _sectionLabel('Category'),
+              const SizedBox(height: 10),
               CategoryDropdown(
                 onChange: (cat) {
                   _av.selectedCategory = cat;
                 },
               ),
-              SizedBox(height: 10),
-              Row(
-                children: [
-                  Text(
-                    'Date',
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 17,
-                    ),
-                  ),
-                  Spacer(),
-                  Text(
-                    'Expiry',
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 17,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 10),
+              const SizedBox(height: 24),
+
+              _sectionLabel('Dates'),
+              const SizedBox(height: 10),
               Row(
                 children: [
                   Expanded(
                     child: DatePickerField(
                       selectedDate: _av.selectedDate,
                       onTap: _pickDate,
-                      hintText: 'select date',
+                      hintText: 'Date added',
                       icon: Icons.calendar_today,
                     ),
                   ),
-                  SizedBox(width: 20),
+                  const SizedBox(width: 14),
                   Expanded(
                     child: DatePickerField(
                       selectedDate: _av.expiryDate,
@@ -216,27 +204,38 @@ class _AddScreenState extends ConsumerState<AddScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 40),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextButton(
-                      style: TextButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        minimumSize: Size(double.infinity, 60),
-                      ),
-                      onPressed: _addProduct,
-                      child: Text(
-                        'Add product',
-                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        ),
-                      ),
+              const SizedBox(height: 36),
+
+              SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    backgroundColor: colorScheme.primary,
+                    minimumSize: const Size(double.infinity, 58),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
                     ),
                   ),
-                ],
+                  onPressed: isLoading ? null : _addProduct,
+                  child: isLoading
+                      ? SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: colorScheme.onPrimary,
+                          ),
+                        )
+                      : Text(
+                          'Add product',
+                          style: Theme.of(context).textTheme.bodyMedium!
+                              .copyWith(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                                color: colorScheme.onPrimary,
+                              ),
+                        ),
+                ),
               ),
             ],
           ),

@@ -6,27 +6,34 @@ class FilterButton extends StatelessWidget {
     required this.label,
     required this.isSelected,
     required this.onPressed,
+    this.count,
   });
+
   final String label;
+  final int? count;
   final bool isSelected;
   final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
-    final primary = Theme.of(context).colorScheme.primary;
-    final onPrimary = Theme.of(context).colorScheme.onPrimary;
-    final surface = Theme.of(context).colorScheme.surfaceContainerHighest;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return FilledButton(
       style: FilledButton.styleFrom(
-        backgroundColor: isSelected ? primary : surface,
-        foregroundColor: isSelected ? onPrimary : Colors.black,
+        backgroundColor: isSelected
+            ? colorScheme.primary
+            : colorScheme.surfaceContainerHighest,
+        foregroundColor: isSelected
+            ? colorScheme.onPrimary
+            : colorScheme.onSurfaceVariant,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
       onPressed: onPressed,
-
       child: Text(
-        label,
-        // style: TextStyle(color: Theme.of(context).colorScheme.primary),
+        count != null ? '$label ($count)' : label,
+        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }

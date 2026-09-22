@@ -16,31 +16,28 @@ class AlertBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Dismissible(
       key: key!,
       background: Container(
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primaryContainer,
+          color: colorScheme.primaryContainer,
           borderRadius: BorderRadius.circular(12),
         ),
-        alignment: Alignment.centerRight, // Puts the icon on the right side
+        alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),
-        child: const Icon(Icons.delete, color: Colors.white),
+        child: Icon(Icons.delete, color: colorScheme.onPrimaryContainer),
       ),
-
-      onDismissed: (direction) {
-        onDismissed();
-      },
-
-      ///Visual Allert
+      onDismissed: (direction) => onDismissed(),
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
-
         child: Material(
           color: Colors.transparent,
           child: InkWell(
             onTap: onDismissed,
+            borderRadius: BorderRadius.circular(12),
             child: Ink(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(

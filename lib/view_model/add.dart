@@ -49,7 +49,7 @@ class AddViewModel {
       productQuantity: int.tryParse(quantityController.text) ?? 0,
       productExpiryDate: expiryDate ?? DateTime.now(),
       productDate: selectedDate ?? DateTime.now(),
-      imageUrl: imageBase64, // store base64 string
+      imageUrl: imageBase64, 
     );
   }
 
