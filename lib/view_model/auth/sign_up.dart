@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 class SignUpViewModel {
@@ -44,14 +46,27 @@ class SignUpViewModel {
         validatePassword() == null;
   }
 
-  void submit() {
-    if (!isValidate()) return;
-    final name = nameController.text;
-    final email = emailController.text;
+  Future<String?> submit() async {
+    if (!isValidate()) return 'Please fix the errors above';
+
+    final name = nameController.text.trim();
+    final email = emailController.text.trim();
     final password = passwordController.text;
-    print(name);
-    print(email);
-    print(password);
+    try {
+      final credential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+      await credential.user?.updateDisplayName(name);
+      return null;
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case 'email-already-in-use':
+          return 'An account already exists with that email';
+        case 'weak-password':
+          return 'Password is too weak';
+        default:
+          return e.message ?? 'Sign up failed. Please try again.';
+      }
+    }
   }
 
   void dispose() {

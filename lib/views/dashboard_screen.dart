@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:inventflow/view_model/auth/auth_state.dart';
 import 'package:inventflow/view_model/sales_analytics.dart';
 import 'package:inventflow/view_model/inventory.dart';
+import 'package:inventflow/view_model/settings_stuff/settings_prefs.dart';
 import 'package:inventflow/views/expiry_screen.dart';
-import 'package:inventflow/widgets/containers/alert_banner.dart';
+import 'package:inventflow/views/inventory_screen.dart';
+import 'package:inventflow/widgets/containers/alert_chip.dart';
 import 'package:inventflow/widgets/containers/info_badge.dart';
 import 'package:inventflow/widgets/containers/overview_card.dart';
 
@@ -15,8 +18,12 @@ class DashboardScreen extends ConsumerWidget {
     ref.watch(inventoryProvider);
     ref.watch(salesAnalyticsProvider);
 
+    final lowStockAlertsEnabled = ref.watch(lowStockAlertsEnabledProvider);
+    final user = ref.watch(authStateProvider).value;
     final inventory = ref.watch(inventoryProvider.notifier);
     final analytics = ref.watch(salesAnalyticsProvider.notifier);
+    final expiryRemindersEnabled = ref.watch(expiryRemindersEnabledProvider);
+
     final colorScheme = Theme.of(context).colorScheme;
 
     var kLargeTextStyle = Theme.of(
@@ -33,7 +40,7 @@ class DashboardScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Hello Albert!')),
+      appBar: AppBar(title: Text(user?.displayName ?? 'Unknown user')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -42,26 +49,57 @@ class DashboardScreen extends ConsumerWidget {
             Text('Dashboard', style: kLargeTextStyle),
             const SizedBox(height: 20),
 
-            if (inventory.expiredProducts.isNotEmpty)
-              AlertBanner(
-                key: const ValueKey('expired'),
-                message:
-                    '${inventory.expiredProducts.length} item(s) EXPIRED! Remove them.',
-                icon: Icons.info_outline,
-                themeColor: colorScheme.error,
-                onDismissed: goToExpiry,
-              ),
+            Builder(
+              builder: (context) {
+                final chips = <Widget>[
+                  if (inventory.expiredProducts.isNotEmpty)
+                    AlertChip(
+                      icon: Icons.info_outline,
+                      label: '${inventory.expiredProducts.length} expired',
+                      themeColor: colorScheme.error,
+                      onTap: goToExpiry,
+                    ),
+                  if (expiryRemindersEnabled &&
+                      inventory.nearExpiredProducts.isNotEmpty)
+                    AlertChip(
+                      icon: Icons.access_time,
+                      label:
+                          '${inventory.nearExpiredProducts.length} expiring soon',
+                      themeColor: colorScheme.tertiary,
+                      onTap: goToExpiry,
+                    ),
+                  if (lowStockAlertsEnabled &&
+                      inventory.lowStockProducts.isNotEmpty)
+                    AlertChip(
+                      icon: Icons.inventory_2_outlined,
+                      label: '${inventory.lowStockProducts.length} low stock',
+                      themeColor: colorScheme.secondary,
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (ctx) => InventoryScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                ];
 
-            if (inventory.nearExpiredProducts.isNotEmpty)
-              AlertBanner(
-                key: const ValueKey('near_expiry'),
-                message:
-                    '${inventory.nearExpiredProducts.length} items expiring within 7 days.',
-                icon: Icons.access_time,
-                themeColor: colorScheme.tertiary,
-                onDismissed: goToExpiry,
-              ),
+                if (chips.isEmpty) return const SizedBox.shrink();
 
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: SizedBox(
+                    height: 36,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: chips.length,
+                      separatorBuilder: (_, __) => const SizedBox(width: 8),
+                      itemBuilder: (context, index) => chips[index],
+                    ),
+                  ),
+                );
+              },
+            ),
             // revenue card
             Container(
               width: double.infinity,

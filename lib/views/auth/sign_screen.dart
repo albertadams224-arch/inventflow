@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:inventflow/view_model/auth/sign_up.dart';
 import 'package:inventflow/views/auth/login_screen.dart';
+import 'package:inventflow/views/tabs.dart';
 import 'package:inventflow/widgets/input_fields.dart';
 
 class SignUp extends StatefulWidget {
@@ -13,11 +14,27 @@ class SignUp extends StatefulWidget {
 class _SignUpState extends State<SignUp> {
   final _vm = SignUpViewModel();
   final _formKey = GlobalKey<FormState>();
+  bool isLoading = false;
 
-  void _handleSubmit() {
-    if (_formKey.currentState!.validate()) {
-      _vm.submit();
+  Future<void> _handleSubmit() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => isLoading = true);
+    final error = await _vm.submit();
+    if (mounted) setState(() => isLoading = false);
+
+    if (!mounted) return;
+
+    if (error != null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error)));
+      return;
     }
+
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (ctx) => TabScreen()));
   }
 
   @override
@@ -28,105 +45,153 @@ class _SignUpState extends State<SignUp> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     var kLargeTextStyle = Theme.of(
       context,
-    ).textTheme.titleLarge!.copyWith(fontSize: 32, fontWeight: FontWeight.bold);
-    var kBodyLargeTextStyle = Theme.of(
-      context,
-    ).textTheme.bodyLarge!.copyWith(fontSize: 20, fontWeight: FontWeight.bold);
+    ).textTheme.titleLarge!.copyWith(fontSize: 28, fontWeight: FontWeight.bold);
+    var kFieldLabelStyle = Theme.of(context).textTheme.bodyMedium!.copyWith(
+      fontSize: 15,
+      fontWeight: FontWeight.w600,
+      color: colorScheme.onSurfaceVariant,
+    );
 
     return Scaffold(
-      appBar: AppBar(backgroundColor: Theme.of(context).colorScheme.surface),
+      appBar: AppBar(backgroundColor: colorScheme.surface, elevation: 0),
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      height: 100,
-                      width: 100,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Theme.of(context).colorScheme.primaryContainer,
-                      ),
-                      child: Icon(Icons.grid_view, size: 70),
+                const SizedBox(height: 10),
+                Center(
+                  child: Container(
+                    height: 88,
+                    width: 88,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(22),
+                      color: colorScheme.primaryContainer,
                     ),
-                  ],
+                    child: Icon(
+                      Icons.grid_view_rounded,
+                      size: 42,
+                      color: colorScheme.onPrimaryContainer,
+                    ),
+                  ),
                 ),
-                SizedBox(height: 15),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [Text('InventFlow', style: kLargeTextStyle)],
+                const SizedBox(height: 16),
+                Center(
+                  child: Text(
+                    'InventFlow',
+                    style: kLargeTextStyle.copyWith(fontSize: 24),
+                  ),
                 ),
-                SizedBox(height: 30),
-                Row(
-                  children: [Text(' Create account', style: kLargeTextStyle)],
+                const SizedBox(height: 32),
+                Text('Create account', style: kLargeTextStyle),
+                const SizedBox(height: 4),
+                Text(
+                  'Sign up to start managing your inventory',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
                 ),
-                SizedBox(height: 10),
-                Row(children: [Text('Name', style: kBodyLargeTextStyle)]),
-                SizedBox(height: 10),
+                const SizedBox(height: 28),
+
+                Text('Name', style: kFieldLabelStyle),
+                const SizedBox(height: 8),
                 InputFields(
                   hintText: 'Enter name',
                   controller: _vm.nameController,
                   validator: (value) => _vm.validateName(),
                 ),
-                SizedBox(height: 10),
-                Row(children: [Text('Email', style: kBodyLargeTextStyle)]),
-                SizedBox(height: 10),
+                const SizedBox(height: 20),
+
+                Text('Email', style: kFieldLabelStyle),
+                const SizedBox(height: 8),
                 InputFields(
-                  hintText: 'Email Address',
+                  hintText: 'Email address',
                   controller: _vm.emailController,
                   validator: (value) => _vm.validateEmail(),
                 ),
-                SizedBox(height: 10),
-                Row(children: [Text('Password', style: kBodyLargeTextStyle)]),
-                SizedBox(height: 10),
+                const SizedBox(height: 20),
+
+                Text('Password', style: kFieldLabelStyle),
+                const SizedBox(height: 8),
                 InputFields(
                   hintText: 'Password',
                   controller: _vm.passwordController,
                   validator: (value) => _vm.validatePassword(),
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 28),
 
                 TextButton(
                   style: TextButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    minimumSize: Size(double.infinity, 60),
+                    backgroundColor: colorScheme.primary,
+                    minimumSize: const Size(double.infinity, 58),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadiusGeometry.circular(15),
+                      borderRadius: BorderRadius.circular(14),
                     ),
                   ),
-                  onPressed: _handleSubmit,
-                  child: Text('Create account', style: kBodyLargeTextStyle),
+                  onPressed: isLoading ? null : _handleSubmit,
+                  child: isLoading
+                      ? SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: colorScheme.onPrimary,
+                          ),
+                        )
+                      : Text(
+                          'Create account',
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                            color: colorScheme.onPrimary,
+                          ),
+                        ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 20),
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Have an account?', style: kBodyLargeTextStyle),
+                    Text(
+                      'Have an account? ',
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
                     TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(builder: (ctx) => Login()),
-                        );
-                      },
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: const Size(0, 0),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      onPressed: isLoading
+                          ? null
+                          : () {
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(builder: (ctx) => Login()),
+                              );
+                            },
                       child: Text(
                         'Log in',
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          fontSize: 20,
+                        style: TextStyle(
+                          fontSize: 15,
                           fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.primary,
+                          color: colorScheme.primary,
                         ),
                       ),
                     ),
                   ],
                 ),
+                const SizedBox(height: 20),
               ],
             ),
           ),

@@ -21,7 +21,7 @@ class InputFields extends StatelessWidget {
     return TextFormField(
       controller: controller,
       validator: validator,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
+      autovalidateMode: AutovalidateMode.disabled,
       keyboardType: keyboardType,
       decoration: InputDecoration(
         hintText: hintText ?? 'Enter text',

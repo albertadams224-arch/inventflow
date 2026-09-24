@@ -14,7 +14,7 @@ class InventoryViewModel extends Notifier<List<Product>> {
   ProductCategory? _selectedCategory;
   ProductCategory? get selectedCategory => _selectedCategory;
   final TextEditingController searchQuery = TextEditingController();
-
+  static const int lowStockThreshold = 5;
   @override
   List<Product> build() {
     searchQuery.addListener(() => ref.notifyListeners());
@@ -105,5 +105,14 @@ class InventoryViewModel extends Notifier<List<Product>> {
       final daysLeft = p.productExpiryDate.difference(today).inDays;
       return daysLeft >= 0 && daysLeft <= 7;
     }).toList();
+  }
+
+  List<Product> get lowStockProducts {
+    return state
+        .where(
+          (p) =>
+              p.productQuantity <= lowStockThreshold && p.productQuantity > 0,
+        )
+        .toList();
   }
 }

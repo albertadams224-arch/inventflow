@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class LoginViewModel {
@@ -30,12 +31,31 @@ class LoginViewModel {
     return validateEmail() == null && validatePassword() == null;
   }
 
-  void submit() {
-    if (!isValid()) return;
-    String email = emailController.text;
-    String password = passwordController.text;
-    print(email);
-    print(password);
+  Future<String?> submit() async {
+    if (!isValid()) return 'Please fix the errors above';
+
+    final email = emailController.text.trim();
+    final password = passwordController.text;
+
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return null;
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case 'user-not-found':
+        case 'invalid-credential':
+          return 'No account found with that email/password';
+        case 'wrong-password':
+          return 'Incorrect password';
+        case 'too-many-requests':
+          return 'Too many attempts. Try again later';
+        default:
+          return e.message ?? 'Login failed. Please try again.';
+      }
+    }
   }
 
   void dispose() {

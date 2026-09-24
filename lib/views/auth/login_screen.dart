@@ -14,14 +14,27 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final _vm = LoginViewModel();
   final _formKey = GlobalKey<FormState>();
+  bool isLoading = false;
 
-  void _handleSubmit() {
-    if (_formKey.currentState!.validate()) {
-      _vm.submit();
-      Navigator.of(
+  Future<void> _handleSubmit() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => isLoading = true);
+    final error = await _vm.submit();
+    if (mounted) setState(() => isLoading = false);
+
+    if (!mounted) return;
+
+    if (error != null) {
+      ScaffoldMessenger.of(
         context,
-      ).pushReplacement(MaterialPageRoute(builder: (ctx) => TabScreen()));
+      ).showSnackBar(SnackBar(content: Text(error)));
+      return;
     }
+
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (ctx) => TabScreen()));
   }
 
   @override
@@ -32,111 +45,162 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     var kLargeTextStyle = Theme.of(
       context,
-    ).textTheme.titleLarge!.copyWith(fontSize: 32, fontWeight: FontWeight.bold);
-    var kBodyLargeTextStyle = Theme.of(
-      context,
-    ).textTheme.bodyLarge!.copyWith(fontSize: 20, fontWeight: FontWeight.bold);
+    ).textTheme.titleLarge!.copyWith(fontSize: 28, fontWeight: FontWeight.bold);
+    var kFieldLabelStyle = Theme.of(context).textTheme.bodyMedium!.copyWith(
+      fontSize: 15,
+      fontWeight: FontWeight.w600,
+      color: colorScheme.onSurfaceVariant,
+    );
 
     return Scaffold(
-      appBar: AppBar(backgroundColor: Theme.of(context).colorScheme.surface),
+      appBar: AppBar(backgroundColor: colorScheme.surface, elevation: 0),
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      height: 100,
-                      width: 100,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Theme.of(context).colorScheme.primaryContainer,
-                      ),
-                      child: Icon(Icons.grid_view, size: 70),
+                const SizedBox(height: 10),
+                Center(
+                  child: Container(
+                    height: 88,
+                    width: 88,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(22),
+                      color: colorScheme.primaryContainer,
                     ),
-                  ],
+                    child: Icon(
+                      Icons.grid_view_rounded,
+                      size: 42,
+                      color: colorScheme.onPrimaryContainer,
+                    ),
+                  ),
                 ),
-                SizedBox(height: 15),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [Text('InventFlow', style: kLargeTextStyle)],
+                const SizedBox(height: 16),
+                Center(
+                  child: Text(
+                    'InventFlow',
+                    style: kLargeTextStyle.copyWith(fontSize: 24),
+                  ),
                 ),
-                SizedBox(height: 40),
-                Row(children: [Text('Welcome back', style: kLargeTextStyle)]),
-                SizedBox(height: 20),
-                Row(children: [Text('Email', style: kBodyLargeTextStyle)]),
-                SizedBox(height: 10),
+                const SizedBox(height: 36),
+                Text('Welcome back', style: kLargeTextStyle),
+                const SizedBox(height: 4),
+                Text(
+                  'Log in to keep managing your inventory',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 28),
+
+                Text('Email', style: kFieldLabelStyle),
+                const SizedBox(height: 8),
                 InputFields(
-                  hintText: 'Email Address',
+                  hintText: 'Email address',
                   controller: _vm.emailController,
                   validator: (value) => _vm.validateEmail(),
                 ),
-                SizedBox(height: 20),
-                Row(children: [Text('Password', style: kBodyLargeTextStyle)]),
-                SizedBox(height: 10),
+                const SizedBox(height: 20),
+
+                Text('Password', style: kFieldLabelStyle),
+                const SizedBox(height: 8),
                 InputFields(
                   hintText: 'Password',
                   controller: _vm.passwordController,
                   validator: (value) => _vm.validatePassword(),
                 ),
-                SizedBox(height: 30),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        'Forgot password?',
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {},
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                    ),
+                    child: Text(
+                      'Forgot password?',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: colorScheme.primary,
                       ),
                     ),
-                  ],
+                  ),
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 16),
+
                 TextButton(
                   style: TextButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    minimumSize: Size(double.infinity, 60),
+                    backgroundColor: colorScheme.primary,
+                    minimumSize: const Size(double.infinity, 58),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadiusGeometry.circular(15),
+                      borderRadius: BorderRadius.circular(14),
                     ),
                   ),
-                  onPressed: _handleSubmit,
-                  child: Text('Log in', style: kBodyLargeTextStyle),
+                  onPressed: isLoading ? null : _handleSubmit,
+                  child: isLoading
+                      ? SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: colorScheme.onPrimary,
+                          ),
+                        )
+                      : Text(
+                          'Log in',
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                            color: colorScheme.onPrimary,
+                          ),
+                        ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('No account?', style: kBodyLargeTextStyle),
+                    Text(
+                      "No account? ",
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
                     TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(builder: (ctx) => SignUp()),
-                        );
-                      },
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: const Size(0, 0),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      onPressed: isLoading
+                          ? null
+                          : () {
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(builder: (ctx) => SignUp()),
+                              );
+                            },
                       child: Text(
                         'Sign up',
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          fontSize: 20,
+                        style: TextStyle(
+                          fontSize: 15,
                           fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.primary,
+                          color: colorScheme.primary,
                         ),
                       ),
                     ),
                   ],
                 ),
+                const SizedBox(height: 20),
               ],
             ),
           ),
