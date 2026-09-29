@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inventflow/view_model/auth/auth_state.dart';
+import 'package:inventflow/view_model/notification_watcher.dart';
 import 'package:inventflow/view_model/sales_analytics.dart';
 import 'package:inventflow/view_model/inventory.dart';
 import 'package:inventflow/view_model/settings_stuff/settings_prefs.dart';
@@ -17,7 +18,7 @@ class DashboardScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(inventoryProvider);
     ref.watch(salesAnalyticsProvider);
-
+    ref.watch(notificationWatcherProvider);
     final lowStockAlertsEnabled = ref.watch(lowStockAlertsEnabledProvider);
     final user = ref.watch(authStateProvider).value;
     final inventory = ref.watch(inventoryProvider.notifier);

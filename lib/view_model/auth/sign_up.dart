@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:inventflow/view_model/auth/google_sign_in_result.dart';
 
 class SignUpViewModel {
   final nameController = TextEditingController();
@@ -66,6 +67,31 @@ class SignUpViewModel {
         default:
           return e.message ?? 'Sign up failed. Please try again.';
       }
+    }
+  }
+
+  Future<GoogleSignInResult> signInWithGoogle() async {
+    try {
+      final googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) {
+        return GoogleSignInResult();
+      }
+
+      final googleAuth = await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(
+        credential,
+      );
+
+      return GoogleSignInResult(
+        isNewUser: userCredential.additionalUserInfo?.isNewUser ?? false,
+      );
+    } catch (e) {
+      return GoogleSignInResult(error: 'Google sign-in failed: $e');
     }
   }
 

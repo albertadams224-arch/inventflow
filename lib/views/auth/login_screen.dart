@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:inventflow/view_model/auth/login.dart';
+import 'package:inventflow/views/auth/forgot_password_screen.dart';
 import 'package:inventflow/views/auth/sign_screen.dart';
 import 'package:inventflow/views/tabs.dart';
 import 'package:inventflow/widgets/input_fields.dart';
@@ -31,10 +32,6 @@ class _LoginState extends State<Login> {
       ).showSnackBar(SnackBar(content: Text(error)));
       return;
     }
-
-    Navigator.of(
-      context,
-    ).pushReplacement(MaterialPageRoute(builder: (ctx) => TabScreen()));
   }
 
   @override
@@ -121,7 +118,13 @@ class _LoginState extends State<Login> {
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (ctx) => const ForgotPasswordScreen(),
+                        ),
+                      );
+                    },
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 4),
                     ),
@@ -164,6 +167,74 @@ class _LoginState extends State<Login> {
                           ),
                         ),
                 ),
+
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(child: Divider(color: colorScheme.outlineVariant)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Text(
+                        'or',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                    Expanded(child: Divider(color: colorScheme.outlineVariant)),
+                  ],
+                ),
+                const SizedBox(height: 20),
+
+                OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 58),
+                    side: BorderSide(color: colorScheme.outlineVariant),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  onPressed: isLoading
+                      ? null
+                      : () async {
+                          setState(() => isLoading = true);
+                          final result = await _vm.signInWithGoogle();
+                          if (mounted) setState(() => isLoading = false);
+                          if (!mounted) return;
+
+                          if (result.error != null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(result.error!)),
+                            );
+                            return;
+                          }
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                result.isNewUser
+                                    ? 'Account created with Google!'
+                                    : 'Welcome back! You already have an account.',
+                              ),
+                              duration: const Duration(milliseconds: 1200),
+                            ),
+                          );
+
+                          Navigator.of(
+                            context,
+                          ).popUntil((route) => route.isFirst);
+                        },
+                  icon: const Icon(Icons.g_mobiledata, size: 26),
+                  label: Text(
+                    'Continue with Google',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 20),
 
                 Row(
@@ -185,7 +256,7 @@ class _LoginState extends State<Login> {
                       onPressed: isLoading
                           ? null
                           : () {
-                              Navigator.of(context).pushReplacement(
+                              Navigator.of(context).push(
                                 MaterialPageRoute(builder: (ctx) => SignUp()),
                               );
                             },

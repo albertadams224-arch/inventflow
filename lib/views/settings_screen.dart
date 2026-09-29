@@ -4,7 +4,7 @@ import 'package:inventflow/view_model/auth/auth_state.dart';
 import 'package:inventflow/view_model/settings_stuff/settings_prefs.dart';
 import 'package:inventflow/view_model/settings_stuff/theme.dart';
 import 'package:inventflow/widgets/containers/profile_header.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:inventflow/widgets/buttons/logout_button.dart';
 import 'package:inventflow/widgets/containers/settings_group.dart';
 import 'package:inventflow/widgets/containers/theme_option_tile.dart';
@@ -151,7 +151,38 @@ class SettingsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 28),
 
-            LogoutButton(onPressed: () {}),
+            LogoutButton(
+              onPressed: () async {
+                final confirmed = await showDialog<bool>(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Log out?'),
+                    content: const Text(
+                      'You\'ll need to sign in again to continue.',
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        child: Text(
+                          'Log out',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+
+                if (confirmed == true) {
+                  await FirebaseAuth.instance.signOut();
+                }
+              },
+            ),
           ],
         ),
       ),
