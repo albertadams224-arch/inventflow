@@ -10,6 +10,8 @@ import 'package:inventflow/widgets/containers/settings_group.dart';
 import 'package:inventflow/widgets/containers/theme_option_tile.dart';
 import 'package:inventflow/widgets/content/settings_list_tile.dart';
 import 'package:inventflow/widgets/content/settings_toggle_tile.dart';
+import 'package:inventflow/services/csv_export_service.dart';
+import 'package:inventflow/view_model/inventory.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -117,7 +119,16 @@ class SettingsScreen extends ConsumerWidget {
                 SettingsListTile(
                   icon: Icons.download_outlined,
                   label: 'Export inventory (CSV)',
-                  onTap: () {},
+                  onTap: () async {
+                    final products = ref.read(inventoryProvider);
+                    if (products.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('No products to export')),
+                      );
+                      return;
+                    }
+                    await CsvExportService.exportProducts(products);
+                  },
                 ),
                 SettingsListTile(
                   icon: Icons.lock_outline,

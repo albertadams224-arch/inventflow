@@ -10,6 +10,7 @@ import 'package:inventflow/widgets/content/inventory_listview_content.dart';
 import 'package:inventflow/widgets/content/inventory_listview_item.dart';
 import 'package:inventflow/widgets/input_fields.dart';
 import 'package:inventflow/view_model/sales.dart';
+import 'package:inventflow/widgets/dialogs/confirm_dialog.dart';
 
 class InventoryScreen extends ConsumerWidget {
   const InventoryScreen({super.key});
@@ -73,9 +74,19 @@ class InventoryScreen extends ConsumerWidget {
             itemCount: products.length,
             itemBuilder: (context, index) => InventoryContentCard(
               product: products[index],
-              onDismissed: () => ref
-                  .read(inventoryProvider.notifier)
-                  .removeProduct(products[index]),
+              onDismissed: () async {
+                final confirmed = await showConfirmDialog(
+                  context,
+                  title: 'Delete product?',
+                  message:
+                      'This will permanently remove "${products[index].productName}" from your inventory.',
+                );
+                if (confirmed) {
+                  ref
+                      .read(inventoryProvider.notifier)
+                      .removeProduct(products[index]);
+                }
+              },
             ),
           );
 

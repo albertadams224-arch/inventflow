@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:inventflow/view_model/auth/login.dart';
 import 'package:inventflow/views/auth/forgot_password_screen.dart';
 import 'package:inventflow/views/auth/sign_screen.dart';
-import 'package:inventflow/views/tabs.dart';
 import 'package:inventflow/widgets/input_fields.dart';
 
 class Login extends StatefulWidget {

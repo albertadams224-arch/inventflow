@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -13,7 +13,7 @@ class AddViewModel {
   DateTime? selectedDate;
   DateTime? expiryDate;
   ProductCategory? selectedCategory;
-  File? selectedImage;
+  Uint8List? selectedImage;
 
   String? validateInput() {
     if (nameController.text.isEmpty) return 'Product name must not be empty';
@@ -32,15 +32,9 @@ class AddViewModel {
 
   bool isValid() => validateInput() == null;
 
-  // uploads image and returns download URL
-  Future<String> _imageToBase64() async {
-    final bytes = await selectedImage!.readAsBytes();
-    return base64Encode(bytes);
-  }
-
-  // builds product after uploading image
+  // builds product — image bytes are already in memory, no file read needed
   Future<Product> buildProduct() async {
-    final imageBase64 = await _imageToBase64();
+    final imageBase64 = base64Encode(selectedImage!);
     return Product(
       id: '',
       productName: nameController.text,
@@ -49,7 +43,7 @@ class AddViewModel {
       productQuantity: int.tryParse(quantityController.text) ?? 0,
       productExpiryDate: expiryDate ?? DateTime.now(),
       productDate: selectedDate ?? DateTime.now(),
-      imageUrl: imageBase64, 
+      imageUrl: imageBase64,
     );
   }
 
